@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Notifications | Alumni Network</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #f7fbff 0%, #e8f3ff 100%);
+    color: #0f172a;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+/* ---------- PANEL CONTAINER ---------- */
+.notif-panel {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(37, 99, 235, 0.1);
+    overflow: hidden;
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- HEADER ---------- */
+.notif-header {
+    padding: 25px 35px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notif-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1e40af;
+    letter-spacing: -0.5px;
+}
+
+.mark-read {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2563eb;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.mark-read:hover {
+    text-decoration: underline;
+    color: #1e40af;
+}
+
+/* ---------- NOTIFICATION LIST ---------- */
+.notif-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.notif-item {
+    padding: 25px 35px;
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid #f8fafc;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+}
+
+.notif-item:hover {
+    background-color: #f8fbff;
+}
+
+.notif-item.unread {
+    background-color: #eff6ff;
+}
+
+.notif-item.unread::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    background: #2563eb;
+    border-radius: 50%;
+}
+
+/* ---------- ICON STYLES ---------- */
+.icon-box {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%; /* Circle icons for a softer look */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.icon-blue { background: #dbeafe; color: #2563eb; }
+.icon-purple { background: #f3e8ff; color: #9333ea; }
+.icon-green { background: #dcfce7; color: #16a34a; }
+.icon-orange { background: #ffedd5; color: #ea580c; }
+
+/* ---------- TEXT CONTENT ---------- */
+.notif-body {
+    flex: 1;
+}
+
+.notif-body p {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #334155;
+    margin-bottom: 4px;
+}
+
+.notif-body p b {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.notif-time {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* ---------- PING SOUND (Audio) ---------- */
+#pingSound { display: none; }
+</style>
+</head>
+<body>
+
+<div class="notif-panel">
+    <div class="notif-header">
+        <h1>Notifications</h1>
+        <div class="mark-read">Mark all as read</div>
+    </div>
+
+    <div class="notif-list">
+        
+        <div class="notif-item unread">
+            <div class="icon-box icon-blue">
+                <i class="fa-solid fa-briefcase"></i>
+            </div>
+            <div class="notif-body">
+                <p>New Internship Opportunity: <b>UX Design Intern</b> at <b>Microsoft</b> matches your profile.</p>
+                <span class="notif-time">Just now</span>
+            </div>
+        </div>
+
+        <div class="notif-item unread">
+            <div class="icon-box icon-orange">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div class="notif-body">
+                <p>Don't forget! The <b>Alumni Mentorship Webinar</b> starts in <b>30 minutes</b>.</p>
+                <span class="notif-time">25m ago</span>
+            </div>
+        </div>
+
+        <div class="notif-item">
+            <div class="icon-box icon-green">
+                <i class="fa-solid fa-eye"></i>
+            </div>
+            <div class="notif-body">
+                <p><b>Sarah Jenkins</b> (Alumni '18) and <b>2 others</b> viewed your profile today.</p>
+                <span class="notif-time">4h ago</span>
+            </div>
+        </div>
+
+        <div class="notif-item">
+            <div class="icon-box icon-purple">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <div class="notif-body">
+                <p><b>David Miller</b> accepted your connection request.</p>
+                <span class="notif-time">8h ago</span>
+            </div>
+        </div>
+
+        <div class="notif-item">
+            <div class="icon-box icon-blue">
+                <i class="fa-solid fa-award"></i>
+            </div>
+            <div class="notif-body">
+                <p>Congratulations! You have reached <b>500+ connections</b> in your alumni network.</p>
+                <span class="notif-time">Yesterday</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<audio id="pingSound">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    // Play sound on load
+    window.onload = function() {
+        const sound = document.getElementById('pingSound');
+        // Standard browsers require interaction, so we attempt play
+        // and handle the error silently if blocked.
+        sound.play().catch(() => {
+            console.log("Audio waiting for user interaction.");
+        });
+    };
+
+    // Simple interaction to clear unread states (Front-end only)
+    document.querySelector('.mark-read').addEventListener('click', function() {
+        document.querySelectorAll('.notif-item').forEach(item => {
+            item.classList.remove('unread');
+        });
+        this.style.display = 'none';
+    });
+</script>
+
+</body>
+</html>

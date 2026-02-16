@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Alumni Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 100vh; display: flex; overflow: hidden; position: relative; }
+        
+        .dot-grid-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        #dotCanvas { width: 100%; height: 100%; display: block; }
+        
+        .container { width: 100%; height: 100vh; position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; }
+        
+        /* Soft & Small Login Box */
+        .login-box { 
+            width: 90%; 
+            max-width: 380px; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 24px; 
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); 
+            animation: softPop 0.6s ease-out; 
+        }
+
+        @keyframes softPop { 
+            from { opacity: 0; transform: scale(0.98); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
+
+        .login-header { text-align: center; margin-bottom: 25px; }
+        .login-header h1 { font-size: 24px; font-weight: 700; color: #0f172a; }
+        .login-header p { color: #64748b; font-size: 13px; margin-top: 4px; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; color: #475569; font-size: 11px; font-weight: 600; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+        .input-group input { 
+            width: 100%; 
+            padding: 12px 16px; 
+            background: #f8fafc; 
+            border: 1.5px solid #f1f5f9; 
+            border-radius: 12px; 
+            font-size: 14px; 
+            transition: all 0.2s; 
+        }
+        .input-group input:focus { outline: none; border-color: #93c5fd; background: white; box-shadow: 0 0 0 4px rgba(147, 197, 253, 0.15); }
+
+        .login-btn { 
+            width: 100%; 
+            padding: 12px; 
+            background: linear-gradient(135deg, #60a5fa, #2563eb); 
+            border: none; 
+            border-radius: 12px; 
+            color: white; 
+            font-size: 14px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+        }
+        .login-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+        .forgot-password { text-align: center; margin-top: 15px; }
+        .forgot-password a { color: #3b82f6; font-size: 12px; text-decoration: none; font-weight: 500; }
+
+        /* Pastel Glass Toast */
+        #toast {
+            visibility: hidden;
+            min-width: 220px;
+            text-align: center;
+            border-radius: 15px;
+            padding: 10px 20px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 40px;
+            transform: translateX(-50%) translateY(20px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            backdrop-filter: blur(8px);
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+<div class="dot-grid-bg"><canvas id="dotCanvas"></canvas></div>
+
+<div id="toast">
+    <i id="toast-icon" class="fa-solid fa-circle-check"></i>
+    <span id="toast-message"></span>
+</div>
+
+<div class="container">
+    <div class="login-box">
+        <div class="login-header">
+            <h1>Log In</h1>
+            <p>Welcome back!</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Enter username" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+            </div>
+            <button type="button" class="login-btn" onclick="loginF()">Log In</button>
+        </form>
+        
+        <div class="forgot-password">
+            <a href="signup.html">Create an account</a>
+        </div>
+    </div>
+</div>
+
+<script>
+
+const userData = { id: 6, username: "Bhoomi" }; // Example data from backend
+localStorage.setItem("userSession", JSON.stringify(userData));
+
+function showToast(message, isSuccess = true) {
+    const toast = document.getElementById("toast");
+    const msgSpan = document.getElementById("toast-message");
+    const icon = document.getElementById("toast-icon");
+    
+    if (isSuccess) {
+        toast.style.backgroundColor = "rgba(219, 234, 254, 0.9)"; 
+        toast.style.color = "#1e40af"; 
+        icon.className = "fa-solid fa-circle-check";
+    } else {
+        toast.style.backgroundColor = "rgba(254, 226, 226, 0.9)"; 
+        toast.style.color = "#991b1b"; 
+        icon.className = "fa-solid fa-circle-exclamation";
+    }
+
+    msgSpan.innerText = message;
+    toast.classList.add("show");
+    setTimeout(() => { toast.classList.remove("show"); }, 3000);
+}
+
+function loginF() {
+    const userVal = document.getElementById("username").value;
+    const passVal = document.getElementById("password").value;
+
+    console.log("Attempting login for:", userVal);
+
+    fetch("http://127.0.0.1:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: userVal, password: passVal })
+    })
+    .then(res => {
+        console.log("Response status:", res.status);
+        return res.json();
+    })
+    .then(data => {
+        console.log("Response data:", data);
+        if (data.message === "Login successful") {
+            // Save user session
+            localStorage.setItem("userId", data.user.id);
+            localStorage.setItem("username", data.user.username);
+            localStorage.setItem("role", data.user.role);
+            localStorage.setItem("department", data.user.department);
+            localStorage.setItem("batch_year", data.user.batch_year);
+            
+            showToast("Success! Welcome back.", true);
+            
+            // Role-based redirect
+            setTimeout(() => {
+                if (data.user.role.toLowerCase() === "student") {
+                    console.log("Redirecting to index.html");
+                    window.location.href = "index.html";
+                } else if (data.user.role.toLowerCase() === "alumni") {
+                    console.log("Redirecting to alindex.html");
+                    window.location.href = "alindex.html";
+                }
+            }, 1000);
+        } else {
+            showToast(data.message || "Invalid login", false);
+        }
+    })
+    .catch(err => {
+        console.error("Fetch error:", err);
+        showToast("Server error - make sure backend is running on port 5000!", false);
+    });
+}
+
+/* Dot Animation */
+const canvas = document.getElementById('dotCanvas');
+const ctx = canvas.getContext('2d');
+const config = { dotSize: 4, gap: 15, baseColor: '#1e293b', activeColor: '#3b82f6', proximity: 100, speedTrigger: 100, shockRadius: 200, shockStrength: 4, maxSpeed: 5000, resistance: 750, returnDuration: 1.5 };
+let dots = []; let mouse = { x: 0, y: 0, moving: false }; let lastMouse = { x: 0, y: 0 }; let mouseSpeed = 0;
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initDots(); }
+class Dot {
+    constructor(x, y) { this.baseX = x; this.baseY = y; this.x = x; this.y = y; this.vx = 0; this.vy = 0; this.size = config.dotSize; }
+    update() {
+        const dx = mouse.x - this.x; const dy = mouse.y - this.y; const dist = Math.sqrt(dx * dx + dy * dy);
+        if (mouseSpeed > config.speedTrigger && dist < config.shockRadius) {
+            const angle = Math.atan2(dy, dx); const force = (1 - dist / config.shockRadius) * config.shockStrength;
+            this.vx -= Math.cos(angle) * force * (mouseSpeed / config.maxSpeed); this.vy -= Math.sin(angle) * force * (mouseSpeed / config.maxSpeed);
+        }
+        if (mouse.moving && dist < config.proximity) {
+            const angle = Math.atan2(dy, dx); const force = (1 - dist / config.proximity) * 0.3;
+            this.vx += Math.cos(angle) * force; this.vy += Math.sin(angle) * force;
+        }
+        this.vx += (this.baseX - this.x) / config.returnDuration * 0.05; this.vy += (this.baseY - this.y) / config.returnDuration * 0.05;
+        this.vx *= 0.95; this.vy *= 0.95; this.x += this.vx; this.y += this.vy;
+    }
+    draw() {
+        const dx = mouse.x - this.x; const dy = mouse.y - this.y; const dist = Math.sqrt(dx * dx + dy * dy);
+        let color = config.baseColor; let alpha = 0.5;
+        if (dist < config.proximity) {
+            const ratio = 1 - dist / config.proximity; color = config.activeColor; alpha = 0.4 + ratio * 0.6; this.size = config.dotSize + ratio * 2.5;
+        } else { this.size += (config.dotSize - this.size) * 0.1; }
+        ctx.fillStyle = color; ctx.globalAlpha = alpha; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+    }
+}
+function initDots() { dots = []; const cols = Math.floor(canvas.width / config.gap); const rows = Math.floor(canvas.height / config.gap); for (let i = 0; i <= cols; i++) { for (let j = 0; j <= rows; j++) { dots.push(new Dot(i * config.gap, j * config.gap)); } } }
+function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); mouseSpeed = Math.sqrt((mouse.x - lastMouse.x)**2 + (mouse.y - lastMouse.y)**2); lastMouse = { ...mouse }; dots.forEach(dot => { dot.update(); dot.draw(); }); requestAnimationFrame(animate); }
+window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.moving = true; });
+window.addEventListener('resize', resizeCanvas); resizeCanvas(); animate();
+</script>
+</body>
+</html>

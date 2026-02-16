@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Alumni Association | Welcome</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ---------- STATIC DOT GRID BACKGROUND ---------- */
+.dot-grid-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background-image: radial-gradient(circle, #1e293b 2px, transparent 2px);
+  background-size: 15px 15px;
+  opacity: 0.6;
+}
+
+.container {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  gap: 50px;
+}
+
+/* ---------- HEADER SECTION ---------- */
+.header-section {
+  text-align: center;
+  animation: fadeInDown 1s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.logo-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: white;
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.main-title {
+  font-family: "Playfair Display", serif;
+  font-size: 56px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #60a5fa, #93c5fd, #dbeafe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 15px;
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #cbd5e1;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ---------- BUTTONS SECTION ---------- */
+.buttons-section {
+  display: flex;
+  gap: 20px;
+  animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.main-btn {
+  padding: 18px 50px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-login {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.btn-login:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
+}
+
+.btn-signup {
+  background: transparent;
+  color: white;
+  border: 2px solid #3b82f6;
+}
+
+.btn-signup:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #60a5fa;
+  transform: translateY(-3px);
+}
+
+/* ---------- CAROUSEL SECTION ---------- */
+.carousel-wrapper {
+  animation: fadeInUp 1s ease-out 0.6s both;
+  width: 100%;
+  max-width: 900px;
+}
+
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #2563eb;
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
+  --outer-r: 16px;
+  --p-distance: 8px;
+}
+
+.carousel-track {
+  display: flex;
+  cursor: grab;
+  user-select: none;
+}
+
+.carousel-track:active {
+  cursor: grabbing;
+}
+
+.carousel-item {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  border: 2px solid #3b82f6;
+  border-radius: calc(var(--outer-r) - var(--p-distance));
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  min-height: 180px;
+}
+
+.carousel-item:hover {
+  border-color: #60a5fa;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+}
+
+.carousel-item-header {
+  margin-bottom: 12px;
+  padding: 16px;
+  padding-top: 16px;
+  width: 100%;
+}
+
+.carousel-icon-container {
+  display: flex;
+  height: 36px;
+  width: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.3);
+}
+
+.carousel-icon {
+  height: 18px;
+  width: 18px;
+  color: #fff;
+  font-size: 18px;
+}
+
+.carousel-item-content {
+  padding: 0 16px 16px 16px;
+}
+
+.carousel-item-title {
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+}
+
+.carousel-item-description {
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.carousel-indicators-container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.carousel-indicators {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.carousel-indicator {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.05s;
+  background-color: #475569;
+}
+
+.carousel-indicator.active {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  width: 24px;
+  border-radius: 4px;
+}
+
+.carousel-indicator:hover {
+  background-color: #64748b;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .container {
+    padding: 40px 20px;
+    gap: 35px;
+  }
+  
+  .main-title {
+    font-size: 36px;
+  }
+  
+  .subtitle {
+    font-size: 16px;
+  }
+  
+  .carousel-container {
+    width: 100% !important;
+  }
+  
+  .buttons-section {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .main-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .carousel-item {
+    min-height: 160px;
+  }
+  
+  .carousel-item-title {
+    font-size: 14px;
+  }
+  
+  .carousel-item-description {
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Static Dot Grid Background -->
+<div class="dot-grid-bg"></div>
+
+<div class="container">
+  
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="logo-container">
+      <div class="logo-icon">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+    </div>
+    <h1 class="main-title">STUDENT ALUMNI<br>ASSOCIATION</h1>
+    <p class="subtitle">
+      Connect, Collaborate, and Celebrate - Join a thriving community of students and alumni shaping the future together.
+    </p>
+  </div>
+  
+  <!-- Buttons Section -->
+  <div class="buttons-section">
+    <a href="login.html" class="main-btn btn-login">
+      <i class="fa-solid fa-right-to-bracket"></i>
+      Login
+    </a>
+    <a href="signup.html" class="main-btn btn-signup">
+      <i class="fa-solid fa-user-plus"></i>
+      Sign Up
+    </a>
+  </div>
+  
+  <!-- Carousel Section (Now at Bottom, Smaller) -->
+  <div class="carousel-wrapper">
+    <div class="carousel-container" id="carouselContainer">
+      <div class="carousel-track" id="carouselTrack">
+        <!-- Card 1 -->
+        <div class="carousel-item">
+          <div class="carousel-item-header">
+            <span class="carousel-icon-container">
+              <i class="fa-solid fa-users carousel-icon"></i>
+            </span>
+          </div>
+          <div class="carousel-item-content">
+            <div class="carousel-item-title">Network & Connect</div>
+            <p class="carousel-item-description">Build meaningful relationships with 50,000+ alumni across industries and geographies.</p>
+          </div>
+        </div>
+        
+        <!-- Card 2 -->
+        <div class="carousel-item">
+          <div class="carousel-item-header">
+            <span class="carousel-icon-container">
+              <i class="fa-solid fa-briefcase carousel-icon"></i>
+            </span>
+          </div>
+          <div class="carousel-item-content">
+            <div class="carousel-item-title">Career Opportunities</div>
+            <p class="carousel-item-description">Access exclusive job postings, internships, and career guidance from successful alumni.</p>
+          </div>
+        </div>
+        
+        <!-- Card 3 -->
+        <div class="carousel-item">
+          <div class="carousel-item-header">
+            <span class="carousel-icon-container">
+              <i class="fa-solid fa-calendar-days carousel-icon"></i>
+            </span>
+          </div>
+          <div class="carousel-item-content">
+            <div class="carousel-item-title">Events & Workshops</div>
+            <p class="carousel-item-description">Attend networking events, skill workshops, and seminars led by industry experts.</p>
+          </div>
+        </div>
+        
+        <!-- Card 4 -->
+        <div class="carousel-item">
+          <div class="carousel-item-header">
+            <span class="carousel-icon-container">
+              <i class="fa-solid fa-trophy carousel-icon"></i>
+            </span>
+          </div>
+          <div class="carousel-item-content">
+            <div class="carousel-item-title">Celebrate Success</div>
+            <p class="carousel-item-description">Share your achievements, celebrate milestones, and inspire the next generation.</p>
+          </div>
+        </div>
+        
+        <!-- Card 5 -->
+        <div class="carousel-item">
+          <div class="carousel-item-header">
+            <span class="carousel-icon-container">
+              <i class="fa-solid fa-handshake carousel-icon"></i>
+            </span>
+          </div>
+          <div class="carousel-item-content">
+            <div class="carousel-item-title">Mentorship Programs</div>
+            <p class="carousel-item-description">Get guidance from experienced alumni or become a mentor yourself.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="carousel-indicators-container">
+        <div class="carousel-indicators" id="indicators">
+          <div class="carousel-indicator active" data-index="0"></div>
+          <div class="carousel-indicator" data-index="1"></div>
+          <div class="carousel-indicator" data-index="2"></div>
+          <div class="carousel-indicator" data-index="3"></div>
+          <div class="carousel-indicator" data-index="4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+<script>
+// ========== CAROUSEL FUNCTIONALITY ==========
+const track = document.getElementById('carouselTrack');
+const container = document.getElementById('carouselContainer');
+const indicators = document.querySelectorAll('.carousel-indicator');
+const items = document.querySelectorAll('.carousel-item');
+
+let currentIndex = 0;
+let startX = 0;
+let currentX = 0;
+let isDragging = false;
+let autoplayInterval;
+
+const GAP = 12;
+const ITEM_WIDTH = 240;
+const AUTOPLAY_DELAY = 3000;
+
+// Set initial positions
+function updateCarousel(animate = true) {
+  const offset = -currentIndex * (ITEM_WIDTH + GAP);
+  track.style.transition = animate ? 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
+  track.style.transform = `translateX(${offset}px)`;
+  
+  // Update indicators
+  indicators.forEach((indicator, index) => {
+    indicator.classList.toggle('active', index === currentIndex);
+  });
+}
+
+// Auto-play functionality
+function startAutoplay() {
+  autoplayInterval = setInterval(() => {
+    currentIndex = (currentIndex + 1) % items.length;
+    updateCarousel();
+  }, AUTOPLAY_DELAY);
+}
+
+function stopAutoplay() {
+  clearInterval(autoplayInterval);
+}
+
+// Mouse/Touch events for dragging
+track.addEventListener('mousedown', startDrag);
+track.addEventListener('touchstart', startDrag);
+
+document.addEventListener('mousemove', drag);
+document.addEventListener('touchmove', drag);
+
+document.addEventListener('mouseup', endDrag);
+document.addEventListener('touchend', endDrag);
+
+function startDrag(e) {
+  isDragging = true;
+  startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+  track.style.cursor = 'grabbing';
+  stopAutoplay();
+}
+
+function drag(e) {
+  if (!isDragging) return;
+  
+  currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+  const diff = currentX - startX;
+  const offset = -currentIndex * (ITEM_WIDTH + GAP) + diff;
+  
+  track.style.transition = 'none';
+  track.style.transform = `translateX(${offset}px)`;
+}
+
+function endDrag(e) {
+  if (!isDragging) return;
+  
+  isDragging = false;
+  track.style.cursor = 'grab';
+  
+  const diff = currentX - startX;
+  const threshold = ITEM_WIDTH / 3;
+  
+  if (diff > threshold && currentIndex > 0) {
+    currentIndex--;
+  } else if (diff < -threshold && currentIndex < items.length - 1) {
+    currentIndex++;
+  }
+  
+  updateCarousel();
+  startAutoplay();
+}
+
+// Indicator click
+indicators.forEach((indicator, index) => {
+  indicator.addEventListener('click', () => {
+    currentIndex = index;
+    updateCarousel();
+    stopAutoplay();
+    startAutoplay();
+  });
+});
+
+// Pause on hover
+container.addEventListener('mouseenter', stopAutoplay);
+container.addEventListener('mouseleave', startAutoplay);
+
+// Initialize
+updateCarousel(false);
+startAutoplay();
+</script>
+
+</body>
+</html>

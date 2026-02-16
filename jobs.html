@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Job Opportunities - Alumni Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #f7fbff 0%, #e8f3ff 100%);
+  color: #0f172a;
+  overflow-x: hidden;
+}
+
+/* ---------- LAYOUT ---------- */
+.container {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  min-height: 100vh;
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+  background: linear-gradient(180deg, #e8f3ff 0%, #dbeafe 100%);
+  padding: 28px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  box-shadow: 4px 0 20px rgba(37, 99, 235, 0.08);
+  position: relative;
+}
+
+.sidebar::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, transparent, #bfdbfe, transparent);
+}
+
+.nav-item {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #2563eb;
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.nav-item:hover::before { opacity: 0.1; }
+.nav-item.active::before { opacity: 0.15; }
+
+.nav-item i {
+  font-size: 20px;
+  color: #2563eb;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s;
+}
+
+.nav-item:hover i {
+  color: #1e40af;
+  transform: scale(1.15);
+}
+
+.tooltip {
+  position: absolute;
+  left: 70px;
+  background: #1e40af;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 100;
+}
+
+.nav-item:hover .tooltip { opacity: 1; }
+
+/* ---------- MAIN ---------- */
+.main {
+  padding: 28px 50px;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  animation: slideDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.search {
+  width: 420px;
+  background: white;
+  padding: 14px 22px;
+  border-radius: 30px;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.08);
+  position: relative;
+}
+
+.search input {
+  width: calc(100% - 30px);
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+/* ---------- JOB GRID ---------- */
+.job-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 24px;
+  animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+}
+
+.job-card {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.job-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(37, 99, 235, 0.15);
+}
+
+.company-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #60a5fa, #2563eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+  font-weight: 700;
+}
+
+.job-title { font-size: 20px; font-weight: 700; color: #0f172a; margin-top: 10px;}
+.company-name { color: #2563eb; font-weight: 500; font-size: 15px; margin-bottom: 15px;}
+
+.job-badges { display: flex; gap: 8px; margin-bottom: 20px; }
+.badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.job-footer {
+  display: flex;
+  gap: 10px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.btn-apply {
+  flex: 1;
+  padding: 12px;
+  background: linear-gradient(135deg, #60a5fa, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.page-header h1 {
+  font-size: 36px;
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <aside class="sidebar">
+    <a href="index.html"><div class="nav-item"><i class="fa-solid fa-chart-column"></i><div class="tooltip">Home</div></div></a>
+    <a href="messages.html" class="nav-item"><i class="fa-regular fa-comment"></i><div class="tooltip">Messages</div></a>
+    <a href="events.html"><div class="nav-item"><i class="fa-regular fa-calendar"></i><div class="tooltip">Events</div></div></a>
+    <div class="nav-item active"><i class="fa-solid fa-briefcase"></i><div class="tooltip">Jobs</div></div>
+    <a href="alumnis.html"><div class="nav-item"><i class="fa-solid fa-users"></i><div class="tooltip">Network</div></div></a>
+    
+    <a href="gallery.html" class="nav-item"><i class="fa-solid fa-images"></i><div class="tooltip"></div></a>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="search">
+        <i class="fa-solid fa-search"></i>
+        <input placeholder="Search opportunities..." id="searchInput">
+      </div>
+      
+    </div>
+
+    <div class="page-header">
+      <h1>Job Opportunities</h1>
+      <p>Discover exciting career opportunities from your alumni network</p>
+    </div>
+
+    <div class="job-grid" id="jobGrid">
+      <p>Loading jobs...</p>
+    </div>
+
+    <div class="footer" style="margin-top: 50px; display: flex; justify-content: space-between; font-size: 13px;">
+      <div>© 2026 College Alumni Association</div>
+      <div>Built with 💙</div>
+    </div>
+  </main>
+</div>
+
+<script>
+// --- DYNAMIC FETCH LOGIC ---
+
+async function loadJobs() {
+    const jobGrid = document.getElementById('jobGrid');
+    
+    try {
+        // Change this URL if your Flask port is different
+        const response = await fetch('http://127.0.0.1:5000/get-all-jobs');
+        const jobs = await response.json();
+
+        if (jobs.length === 0) {
+            jobGrid.innerHTML = "<p>No jobs found in the database.</p>";
+            return;
+        }
+
+        jobGrid.innerHTML = ''; // Clear the "Loading" text
+
+        jobs.forEach(job => {
+            // Get first letter of company for the logo
+            const logoLetter = job.company ? job.company.charAt(0).toUpperCase() : 'J';
+            
+            const card = `
+                <div class="job-card">
+                    <div class="job-header">
+                        <div class="company-logo">${logoLetter}</div>
+                        <div class="job-title-section">
+                            <div class="job-title">${job.role}</div>
+                            <div class="company-name">
+                                <i class="fa-solid fa-building"></i> ${job.company}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="job-badges">
+                        <div class="badge"><i class="fa-solid fa-briefcase"></i> ${job.duration || 'Full-Time'}</div>
+                        <div class="badge" style="background:#dcfce7; color:#15803d;">
+                            <i class="fa-solid fa-wallet"></i> ${job.paid_status || 'Paid'}
+                        </div>
+                    </div>
+
+                    <div style="color: #64748b; font-size: 14px; margin-bottom: 20px;">
+                        <i class="fa-solid fa-location-dot"></i> ${job.location}
+                    </div>
+
+                    <div class="job-footer">
+                        <button class="btn-apply" onclick="applyJob('${job.role}', '${job.company}')">
+                            <i class="fa-solid fa-paper-plane"></i> Apply Now
+                        </button>
+                    </div>
+                </div>
+            `;
+            jobGrid.innerHTML += card;
+        });
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
+        jobGrid.innerHTML = `<p style="color:red;">Error connecting to backend. Make sure Flask is running.</p>`;
+    }
+}
+
+// Function for button click
+function applyJob(title, company) {
+    alert(`You are applying for ${title} at ${company}.`);
+}
+
+// Search Functionality
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase();
+    const cards = document.querySelectorAll('.job-card');
+    cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(term) ? 'block' : 'none';
+    });
+});
+
+// Run fetch on page load
+window.onload = loadJobs;
+</script>
+
+</body>
+</html>

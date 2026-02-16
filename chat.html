@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Alumni Chat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+/* CSS remains exactly as you designed it */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+body { background: linear-gradient(135deg, #f7fbff 0%, #e8f3ff 100%); color: #0f172a; overflow: hidden; }
+.container { display: grid; grid-template-columns: 90px 1fr; height: 100vh; }
+.sidebar { background: linear-gradient(180deg, #e8f3ff 0%, #dbeafe 100%); padding: 28px 0; display: flex; flex-direction: column; align-items: center; gap: 30px; box-shadow: 4px 0 20px rgba(37, 99, 235, 0.08); position: relative; }
+.nav-item { position: relative; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; border-radius: 12px; }
+.nav-item i { font-size: 20px; color: #2563eb; position: relative; z-index: 1; }
+.nav-item.active { background: rgba(37, 99, 235, 0.1); }
+.tooltip { position: absolute; left: 70px; background: #1e40af; color: white; padding: 8px 14px; border-radius: 8px; font-size: 12px; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 100; }
+.nav-item:hover .tooltip { opacity: 1; }
+.main { padding: 28px 50px; display: flex; flex-direction: column; }
+.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.search { width: 420px; background: white; padding: 14px 22px; border-radius: 30px; box-shadow: 0 2px 12px rgba(37, 99, 235, 0.08); }
+.search input { width: calc(100% - 30px); border: none; outline: none; font-size: 14px; }
+.profile { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #60a5fa, #2563eb); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; position: relative; }
+.chat-container { display: grid; grid-template-columns: 350px 1fr; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(37, 99, 235, 0.08); overflow: hidden; height: calc(100vh - 140px); }
+.chat-history { background: #fafbff; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; }
+.history-header { padding: 25px 20px; font-weight: 700; font-size: 18px; border-bottom: 1px solid #e5e7eb; }
+.contact-list { overflow-y: auto; flex: 1; }
+.chat-window { display: flex; flex-direction: column; background: #f8faff; }
+.chat-header { padding: 20px 30px; background: white; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 15px; }
+.chat-messages { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+.message { max-width: 65%; padding: 12px 18px; border-radius: 18px; font-size: 14px; line-height: 1.5; }
+.sent { align-self: flex-end; background: linear-gradient(135deg, #60a5fa, #2563eb); color: white; border-bottom-right-radius: 4px; }
+.received { align-self: flex-start; background: white; color: #1f2937; border-bottom-left-radius: 4px; border: 1px solid #e5e7eb; }
+.chat-input-area { padding: 20px 30px; background: white; border-top: 1px solid #e5e7eb; display: flex; gap: 12px; }
+.chat-input-area input { flex: 1; border: 1px solid #e5e7eb; background: #f9fafb; padding: 14px 20px; border-radius: 30px; outline: none; }
+.action-btn { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.send-btn { background: #2563eb; color: white; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <aside class="sidebar">
+    <div class="nav-item"><i class="fa-solid fa-chart-column"></i><div class="tooltip">Home</div></div>
+    <div class="nav-item active"><i class="fa-regular fa-comment"></i><div class="tooltip">Messages</div></div>
+    <div class="nav-item"><i class="fa-regular fa-calendar"></i><div class="tooltip">Events</div></div>
+    <div class="nav-item"><i class="fa-solid fa-briefcase"></i><div class="tooltip">Jobs</div></div>
+    <div class="nav-item logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><div class="tooltip">Logout</div></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="search"><i class="fa-solid fa-search"></i><input placeholder="Search..."></div>
+      <div class="profile">JD</div>
+    </div>
+
+    <div class="chat-container">
+      <div class="chat-history">
+        <div class="history-header">Messages</div>
+        <div class="contact-list" id="contactList">
+            <p style="padding: 20px; color: #94a3b8; font-size: 13px;">No active conversations...</p>
+        </div>
+      </div>
+
+      <div class="chat-window">
+        <div class="chat-header">
+          <div class="avatar" id="activeAvatar">?</div>
+          <div class="chat-header-info">
+            <div class="chat-header-name" id="activeChatName">Select a contact</div>
+            <div class="chat-header-status"><span id="activeStatus">Offline</span></div>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chatBox">
+            </div>
+
+        <div class="chat-input-area">
+          <input type="text" id="msgInput" placeholder="Type your message here...">
+          <div class="input-actions">
+            <button class="action-btn"><i class="fa-solid fa-paperclip"></i></button>
+            <button class="action-btn send-btn" onclick="sendMessage()">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// These variables should be dynamically set based on your login session
+let currentSender = "student_123"; 
+let currentReceiver = null; 
+
+async function loadMessages() {
+    if (!currentReceiver) return;
+
+    try {
+        const res = await fetch(`http://127.0.0.1:5000/messages/${currentSender}/${currentReceiver}`);
+        const messages = await res.json();
+
+        const chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML = "";
+
+        messages.forEach(msg => {
+            const div = document.createElement("div");
+            div.className = `message ${msg.sender === currentSender ? "sent" : "received"}`;
+            div.innerHTML = `${msg.content}<div style="font-size:10px; opacity:0.7; margin-top:5px;">${msg.time || ''}</div>`;
+            chatBox.appendChild(div);
+        });
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+    } catch (err) {
+        console.log("Connect your backend to see live messages!");
+    }
+}
+
+async function sendMessage() {
+    const input = document.getElementById("msgInput");
+    const content = input.value.trim();
+    
+    if (!content || !currentReceiver) return;
+
+    try {
+        await fetch("http://127.0.0.1:5000/send", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                sender: currentSender,
+                receiver: currentReceiver,
+                content: content
+            })
+        });
+
+        input.value = "";
+        loadMessages();
+    } catch (err) {
+        alert("Backend not reached. Check if your Flask server is running!");
+    }
+}
+
+// Support Enter Key
+document.getElementById("msgInput").addEventListener("keypress", e => {
+    if (e.key === "Enter") sendMessage();
+});
+
+// Refresh every 3 seconds if a receiver is selected
+setInterval(loadMessages, 3000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Event | Portal</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f7fbff 0%, #e8f3ff 100%);
+            color: #0f172a;
+            overflow-x: hidden;
+        }
+
+        /* ---------- LAYOUT ---------- */
+        .container {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ---------- SIDEBAR ---------- */
+        .sidebar {
+            background: linear-gradient(180deg, #e8f3ff 0%, #dbeafe 100%);
+            padding: 28px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+            box-shadow: 4px 0 20px rgba(37, 99, 235, 0.08);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: #2563eb;
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .nav-item:hover::before { opacity: 0.1; }
+        .nav-item.active::before { opacity: 0.15; }
+
+        .nav-item i {
+            font-size: 20px;
+            color: #2563eb;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-item.active i { color: #1e40af; }
+
+        /* ---------- TOOLTIP ---------- */
+        .tooltip {
+            position: absolute;
+            left: 65px; 
+            background: #1e40af;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 9999;
+            transform: translateX(-10px);
+        }
+
+        .nav-item:hover .tooltip {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            border-right: 4px solid #1e40af;
+        }
+
+        /* ---------- MAIN CONTENT ---------- */
+        .main {
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center the form card */
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 850px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            color: #2563eb;
+        }
+
+        .header-section {
+            margin-bottom: 32px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-section h1 {
+            font-size: 32px;
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.05);
+            animation: fadeIn 0.8s ease-out;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #f1f5f9;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #60a5fa, #2563eb);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 70px 1fr; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .main { padding: 20px; }
+            .form-card { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <aside class="sidebar">
+        <div class="nav-item">
+            <i class="fa-solid fa-chart-column"></i>
+            <div class="tooltip">Dashboard</div>
+        </div>
+        <div class="nav-item">
+            <i class="fa-regular fa-comment"></i>
+            <div class="tooltip">Messages</div>
+        </div>
+        <div class="nav-item active">
+            <i class="fa-regular fa-calendar"></i>
+            <div class="tooltip">Events</div>
+        </div>
+        <div class="nav-item">
+            <i class="fa-solid fa-briefcase"></i>
+            <div class="tooltip">Jobs</div>
+        </div>
+        <div class="nav-item">
+            <i class="fa-solid fa-users"></i>
+            <div class="tooltip">Network</div>
+        </div>
+        <div class="nav-item" style="margin-top: auto;">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <div class="tooltip">Logout</div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="form-wrapper">
+            <a href="#" class="back-link">
+                <i class="fa-solid fa-arrow-left"></i> Back to Events
+            </a>
+
+            <div class="header-section">
+                <h1>Create New Event</h1>
+                <p style="color: #64748b;">Host a session to share knowledge and connect with alumni.</p>
+            </div>
+
+            <div class="form-card">
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label for="eventTitle">Event Title</label>
+                        <input type="text" id="eventTitle" placeholder="e.g. Annual Tech Summit 2026" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventMode">Event Mode</label>
+                            <select id="eventMode" required>
+                                <option value="online">Online (Virtual)</option>
+                                <option value="in-person">In-Person</option>
+                                <option value="hybrid">Hybrid</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location / Meeting Link</label>
+                            <input type="text" id="location" placeholder="Address or Zoom Link" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventDate">Date</label>
+                            <input type="date" id="eventDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="capacity">Capacity (Max Attendees)</label>
+                            <input type="number" id="capacity" placeholder="100" min="1" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startTime">Start Time</label>
+                            <input type="time" id="startTime" value="18:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="endTime">End Time</label>
+                            <input type="time" id="endTime" value="20:00" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Event Description</label>
+                        <textarea id="description" placeholder="What is the event about? Mention agenda and speakers..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn" onclick="addEvent()">Publish Event</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Prevent form from reloading the page
+    document.getElementById('eventForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        addEvent();
+    });
+
+    function addEvent() {
+        // Retrieve current user ID from session
+        const sessionData = JSON.parse(localStorage.getItem("userSession"));
+        if (!sessionData) {
+            alert("Please login first!");
+            return;
+        }
+
+        const eventData = {
+            created_by: sessionData.id,
+            title: document.getElementById("eventTitle").value,
+            mode: document.getElementById("eventMode").value,
+            location: document.getElementById("location").value,
+            event_date: document.getElementById("eventDate").value,
+            capacity: document.getElementById("capacity").value,
+            start_time: document.getElementById("startTime").value,
+            end_time: document.getElementById("endTime").value,
+            description: document.getElementById("description").value
+        };
+
+        fetch("http://127.0.0.1:5000/add-event", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(eventData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            if (data.message === "Event created successfully") {
+                window.location.href = "eventsal.html"; // Redirect to dashboard
+            }
+        })
+        .catch(err => alert("Error: Backend not reachable"));
+    }
+</script>
+
+</body>
+</html>

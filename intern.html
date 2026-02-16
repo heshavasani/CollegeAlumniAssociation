@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suggest Opportunity - Alumni Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* THEME: LIGHT BLUE BG, BLUE TEXT */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        
+        body { 
+            background-color: #f0f7ff; 
+            color: #1e3a8a; 
+            min-height: 100vh; 
+            display: flex;
+            justify-content: center;
+        }
+        
+        .main { 
+            width: 100%;
+            max-width: 900px;
+            padding: 40px 20px; 
+            animation: fadeIn 0.5s ease-in-out; 
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .topbar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 25px; 
+        }
+        
+        .back-link { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            color: #3b82f6; 
+            text-decoration: none; 
+            font-weight: 500; 
+            font-size: 14px; 
+            transition: 0.2s; 
+        }
+        .back-link:hover { color: #1e40af; transform: translateX(-3px); }
+
+        .profile { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            background: #2563eb; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: 600; 
+        }
+
+        .form-card { 
+            background: #ffffff; 
+            border-radius: 24px; 
+            padding: 40px; 
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.1); 
+            border: 1px solid #dbeafe;
+        }
+        
+        .form-header h1 { 
+            font-size: 32px; 
+            font-weight: 700; 
+            color: #1e40af;
+            margin-bottom: 5px;
+        }
+        .form-header p { color: #60a5fa; font-size: 15px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        
+        label { display: block; font-weight: 600; color: #1e3a8a; margin-bottom: 8px; font-size: 14px; }
+        
+        input, select, textarea { 
+            width: 100%; padding: 12px 18px; border: 2px solid #e0f2fe; 
+            border-radius: 12px; font-size: 14px; background: #fcfdfe; 
+            transition: 0.3s; outline: none; color: #1e3a8a;
+        }
+        input:focus, select:focus, textarea:focus { 
+            border-color: #3b82f6; background: white; 
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); 
+        }
+        
+        .btn-submit { 
+            background: #2563eb; 
+            color: white; border: none; padding: 16px; border-radius: 15px; 
+            font-weight: 600; width: 100%; cursor: pointer; 
+            transition: 0.3s; margin-top: 10px;
+        }
+        .btn-submit:hover { background: #1e40af; transform: translateY(-2px); }
+
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="main">
+        <div class="topbar">
+            <a href="#" class="back-link" onclick="handleBack(event)">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </a>
+            <div class="profile">AJ</div>
+        </div>
+
+        <div class="form-card">
+            <div class="form-header">
+                <h1>Suggest Opportunity</h1>
+                <p>Provide a job opening or internship lead for the community.</p>
+            </div>
+            
+            <form id="opportunityForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Opportunity Type</label>
+                        <select id="oppType">
+                            <option value="Internship">Internship</option>
+                            <option value="Full-time">Full-time Job</option>
+                            <option value="Contract">Contract / Freelance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Role / Title</label>
+                        <input type="text" placeholder="e.g. Software Engineer" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" placeholder="e.g. Google, Tech Solutions" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Work Type</label>
+                        <select id="workType">
+                            <option>On-site</option>
+                            <option>Remote</option>
+                            <option>Hybrid</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" placeholder="e.g. Bangalore, India" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Duration</label>
+                        <input type="text" placeholder="e.g. 6 Months or Permanent">
+                    </div>
+                    <div class="form-group">
+                        <label>Compensation Type</label>
+                        <select id="compType" onchange="toggleStipend(this.value)">
+                            <option value="Paid">Paid</option>
+                            <option value="Unpaid">Unpaid</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="stipendArea" class="form-group">
+                    <label>Stipend / Salary Range</label>
+                    <input type="text" placeholder="e.g. ₹25,000 / month">
+                </div>
+
+                <div class="form-group">
+                    <label>Application Link / Referral Email</label>
+                    <input type="text" placeholder="URL or Contact Email">
+                </div>
+
+                <div class="form-group">
+                    <label>Requirements & Description</label>
+                    <textarea rows="4" placeholder="Briefly describe the requirements..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">Submit Opportunity</button>
+            </form>
+        </div>
+    </main>
+<script>
+    let isDirty = false;
+    const form = document.getElementById('opportunityForm');
+
+    // 1. Setup Profile Initials on Load
+    window.onload = () => {
+        const currentUser = JSON.parse(localStorage.getItem('user'));
+        if (currentUser && currentUser.username) {
+            const initials = currentUser.username.substring(0, 2).toUpperCase();
+            document.querySelector('.profile').textContent = initials;
+        }
+    };
+
+    form.addEventListener('input', () => { isDirty = true; });
+
+    function toggleStipend(val) {
+        const stipendArea = document.getElementById('stipendArea');
+        stipendArea.style.display = (val === "Paid") ? "block" : "none";
+    }
+
+    function handleBack(e) {
+        e.preventDefault();
+        if (isDirty) {
+            if (confirm("Discard unsaved changes?")) {
+                window.location.href = "dashboard.html";
+            }
+        } else {
+            window.location.href = "dashboard.html";
+        }
+    }
+
+    // 2. Form Submission Logic
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const currentUser = JSON.parse(localStorage.getItem('user'));
+        
+        // Extracting values from your specific form IDs and placeholders
+        const jobData = {
+            role: document.querySelector('input[placeholder="e.g. Software Engineer"]').value,
+            company_name: document.querySelector('input[placeholder="e.g. Google, Tech Solutions"]').value,
+            location: document.querySelector('input[placeholder="e.g. Bangalore, India"]').value,
+            duration: document.querySelector('input[placeholder="e.g. 6 Months or Permanent"]').value,
+            paid_status: document.getElementById('compType').value,
+            posted_by: currentUser ? currentUser.id : null,
+            // These extra fields can be added to your Model description/requirements later if needed
+            description: document.querySelector('textarea').value 
+        };
+
+        try {
+            const response = await fetch('http://127.0.0.1:5000/add-job', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jobData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert("Opportunity submitted successfully!");
+                isDirty = false;
+                window.location.href = "aljobs.html"; // Redirect to viewing page
+            } else {
+                alert("Error: " + (result.message || "Failed to submit"));
+            }
+        } catch (error) {
+            console.error("Submission error:", error);
+            alert("Error connecting to server. Please ensure Flask is running.");
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Trip Down Memory Lane - Alumni Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #f7fbff 0%, #e8f3ff 100%);
+  color: #0f172a;
+  overflow-x: hidden;
+}
+
+/* ---------- LAYOUT ---------- */
+.container {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  min-height: 100vh;
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+  background: linear-gradient(180deg, #e8f3ff 0%, #dbeafe 100%);
+  padding: 28px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  box-shadow: 4px 0 20px rgba(37, 99, 235, 0.08);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.nav-item {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 12px;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.nav-item:hover, .nav-item.active {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1e40af;
+}
+
+.nav-item i {
+  position: relative;
+  z-index: 3;
+  font-size: 20px;
+  color: #2563eb;
+  transition: all 0.3s;
+}
+
+.nav-item:hover i {
+  color: #1e40af;
+  transform: scale(1.15);
+}
+
+.nav-item.active i {
+  color: #1e40af;
+}
+
+.nav-item::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-6px);
+  width: 6px;
+  height: 40%;
+  background: linear-gradient(180deg, #60a5fa, #2563eb);
+  border-radius: 8px;
+  opacity: 0;
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.nav-item:hover::after {
+  opacity: 0.25;
+  transform: translateY(-50%) translateX(0);
+}
+
+.nav-item.active::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.tooltip {
+  position: absolute;
+  left: 70px;
+  background: #1e40af;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 100;
+}
+
+.nav-item:hover .tooltip { opacity: 1; }
+
+/* ---------- MAIN ---------- */
+.main {
+  padding: 28px 50px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.search {
+  width: 420px;
+  background: white;
+  padding: 14px 22px;
+  border-radius: 30px;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.08);
+  display: flex;
+  align-items: center;
+}
+
+.search input {
+  width: 100%;
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+/* ---------- HEADER ---------- */
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-header h1 {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1e40af;
+  margin-bottom: 12px;
+}
+
+.page-header p {
+  font-size: 16px;
+  color: #64748b;
+}
+
+/* ---------- MASONRY ANIMATION ---------- */
+.gallery-container {
+  flex: 1;
+  position: relative;
+  min-height: 600px;
+  margin-bottom: 40px;
+}
+
+.list {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+}
+
+.item-wrapper {
+  position: absolute;
+  will-change: transform, width, height, opacity;
+  padding: 6px;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+}
+
+.item-wrapper > .item-img {
+  position: relative;
+  background-size: cover;
+  background-position: center center;
+  width: 100%;
+  height: 100%;
+  text-transform: uppercase;
+  font-size: 10px;
+  line-height: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.item-wrapper:hover .item-img {
+  transform: scale(0.95);
+}
+
+.footer {
+  margin-top: auto;
+  padding: 18px 0;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #475569;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <aside class="sidebar">
+    <a href="index.html" class="nav-item">
+      <i class="fa-solid fa-chart-column"></i>
+      <div class="tooltip">Dashboard</div>
+    </a>
+    <a href="messages.html" class="nav-item">
+      <i class="fa-regular fa-comment"></i>
+      <div class="tooltip">Messages</div>
+    </a>
+    <a href="events.html" class="nav-item">
+      <i class="fa-regular fa-calendar"></i>
+      <div class="tooltip">Events</div>
+    </a>
+    <a href="jobs.html" class="nav-item">
+      <i class="fa-solid fa-briefcase"></i>
+      <div class="tooltip">Jobs</div>
+    </a>
+    <a href="alumnis.html" class="nav-item">
+      <i class="fa-solid fa-users"></i>
+      <div class="tooltip">Network</div>
+    </a>
+    <a href="gallery.html" class="nav-item"><i class="fa-solid fa-images"></i><div class="tooltip">Gallery</div></a>
+    <a href="#" id="logoutBtn" class="nav-item" style="margin-top: auto;">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      <div class="tooltip">Logout</div>
+    </a>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="search">
+        <i class="fa-solid fa-search" style="color: #94a3b8;"></i>
+        <input placeholder="Search memories...">
+      </div>
+    </div>
+
+    <div class="page-header">
+      <h1>A Trip Down Memory Lane</h1>
+      <p>Relive the moments that made our journey unforgettable</p>
+    </div>
+
+    <div class="gallery-container">
+      <div class="list" id="masonryContainer"></div>
+    </div>
+
+    <div class="footer">
+      <div>© 2026 College Alumni Association</div>
+      <div>Built with 💙</div>
+    </div>
+  </main>
+</div>
+
+<script>
+// Sample memory images - replace with your actual images
+const memoryItems = [
+  
+  { id: 2, img: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=800', height: 800 },
+  { id: 3, img: 'https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=500', height: 500 },
+  { id: 4, img: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&h=700', height: 700 },
+  { id: 5, img: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&h=600', height: 600 },
+  { id: 6, img: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=800&h=900', height: 900 },
+  { id: 7, img: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=800&h=550', height: 550 },
+  { id: 8, img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=650', height: 650 },
+  { id: 9, img: 'https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?w=800&h=750', height: 750 },
+  { id: 10, img: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800&h=600', height: 600 },
+  { id: 11, img: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800&h=850', height: 850 },
+  { id: 12, img: 'https://images.unsplash.com/photo-1529390079861-591de354faf5?w=800&h=700', height: 700 }
+];
+
+// Responsive columns based on screen width
+function getColumns() {
+  const width = window.innerWidth - 140; // Account for sidebar and padding
+  if (width >= 1500) return 5;
+  if (width >= 1000) return 4;
+  if (width >= 600) return 3;
+  if (width >= 400) return 2;
+  return 1;
+}
+
+// Calculate masonry grid positions
+function calculateGrid(items, containerWidth) {
+  const columns = getColumns();
+  const colHeights = new Array(columns).fill(0);
+  const columnWidth = containerWidth / columns;
+
+  return items.map(item => {
+    const col = colHeights.indexOf(Math.min(...colHeights));
+    const x = columnWidth * col;
+    const height = item.height / 2;
+    const y = colHeights[col];
+
+    colHeights[col] += height;
+
+    return { ...item, x, y, w: columnWidth, h: height };
+  });
+}
+
+// Get random initial position for animation
+function getInitialPosition(item, containerWidth) {
+  const directions = ['top', 'bottom', 'left', 'right'];
+  const direction = directions[Math.floor(Math.random() * directions.length)];
+
+  switch (direction) {
+    case 'top':
+      return { x: item.x, y: -200 };
+    case 'bottom':
+      return { x: item.x, y: window.innerHeight + 200 };
+    case 'left':
+      return { x: -200, y: item.y };
+    case 'right':
+      return { x: containerWidth + 200, y: item.y };
+    default:
+      return { x: item.x, y: item.y + 100 };
+  }
+}
+
+// Preload images
+async function preloadImages(urls) {
+  await Promise.all(
+    urls.map(src => new Promise(resolve => {
+      const img = new Image();
+      img.src = src;
+      img.onload = img.onerror = () => resolve();
+    }))
+  );
+}
+
+// Initialize masonry gallery
+async function initMasonry() {
+  const container = document.getElementById('masonryContainer');
+  const containerWidth = container.offsetWidth;
+
+  // Preload all images first
+  await preloadImages(memoryItems.map(i => i.img));
+
+  // Calculate grid positions
+  const grid = calculateGrid(memoryItems, containerWidth);
+
+  // Create DOM elements
+  grid.forEach((item, index) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'item-wrapper';
+    wrapper.setAttribute('data-key', item.id);
+
+    const imgDiv = document.createElement('div');
+    imgDiv.className = 'item-img';
+    imgDiv.style.backgroundImage = `url(${item.img})`;
+
+    wrapper.appendChild(imgDiv);
+    container.appendChild(wrapper);
+
+    // Animate from random direction
+    const initialPos = getInitialPosition(item, containerWidth);
+    
+    gsap.fromTo(wrapper, 
+      {
+        opacity: 0,
+        x: initialPos.x,
+        y: initialPos.y,
+        width: item.w,
+        height: item.h,
+        filter: 'blur(10px)'
+      },
+      {
+        opacity: 1,
+        x: item.x,
+        y: item.y,
+        width: item.w,
+        height: item.h,
+        filter: 'blur(0px)',
+        duration: 0.8,
+        ease: 'power3.out',
+        delay: index * 0.05
+      }
+    );
+  });
+
+  // Update container height
+  const maxHeight = Math.max(...grid.map(item => item.y + item.h));
+  container.style.height = `${maxHeight}px`;
+}
+
+// Handle window resize
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    const container = document.getElementById('masonryContainer');
+    const containerWidth = container.offsetWidth;
+    const grid = calculateGrid(memoryItems, containerWidth);
+
+    grid.forEach(item => {
+      const element = document.querySelector(`[data-key="${item.id}"]`);
+      if (element) {
+        gsap.to(element, {
+          x: item.x,
+          y: item.y,
+          width: item.w,
+          height: item.h,
+          duration: 0.6,
+          ease: 'power3.out'
+        });
+      }
+    });
+
+    const maxHeight = Math.max(...grid.map(item => item.y + item.h));
+    container.style.height = `${maxHeight}px`;
+  }, 250);
+});
+
+// Initialize on page load
+window.addEventListener('load', initMasonry);
+
+// Logout Logic
+document.getElementById('logoutBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  localStorage.removeItem('userSession');
+  window.location.href = 'login.html';
+});
+</script>
+</body>
+</html>

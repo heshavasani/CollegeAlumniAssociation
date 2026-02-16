@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Network - Alumni Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* CSS remains consistent with your styling */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        body { background: linear-gradient(135deg, #f7fbff 0%, #e8f3ff 100%); color: #0f172a; }
+        .container { display: grid; grid-template-columns: 90px 1fr; min-height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar { background: #dbeafe; padding: 28px 0; display: flex; flex-direction: column; align-items: center; gap: 30px; box-shadow: 4px 0 20px rgba(0,0,0,0.05); }
+        .nav-item { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #2563eb; text-decoration: none; transition: 0.3s; }
+        .nav-item.active { background: rgba(37, 99, 235, 0.1); color: #1e40af; }
+
+        /* Main */
+        .main { padding: 28px 50px; }
+        .search { width: 420px; background: white; padding: 12px 20px; border-radius: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .search input { border: none; outline: none; width: 90%; font-size: 14px; }
+        
+        .alumni-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+        .alumni-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; text-align: center; }
+        .alumni-card:hover { transform: translateY(-5px); }
+        
+        .avatar { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; font-weight: 700; background: #2563eb; }
+        .role-badge { font-size: 12px; font-weight: 600; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; background: #f1f5f9; color: #64748b; }
+        .role-alumni { background: #dcfce7; color: #15803d; }
+        
+        .info-box { margin-top: 20px; text-align: left; font-size: 14px; color: #475569; }
+        .btn-connect { width: 100%; padding: 10px; border: none; border-radius: 10px; background: #2563eb; color: white; cursor: pointer; margin-top: 15px; transition: 0.3s; }
+        .btn-connect:hover { background: #1e40af; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <aside class="sidebar">
+    <a href="index.html" class="nav-item active"><i class="fa-solid fa-chart-column"></i><div class="tooltip"></div></a>
+    <a href="messages.html" class="nav-item"><i class="fa-regular fa-comment"></i><div class="tooltip"></div></a>
+    <a href="events.html" class="nav-item"><i class="fa-regular fa-calendar"></i><div class="tooltip"></div></a>
+    <a href="jobs.html" class="nav-item"><i class="fa-solid fa-briefcase"></i><div class="tooltip"></div></a>
+    <a href="alumnis.html" class="nav-item"><i class="fa-solid fa-users"></i><div class="tooltip"></div></a>
+    <a href="gallery.html" class="nav-item"><i class="fa-solid fa-images"></i><div class="tooltip"></div></a>
+    <a href="welcome.html" id="logoutBtn" class="nav-item" style="margin-top: auto;"><i class="fa-solid fa-arrow-right-from-bracket"></i><div class="tooltip"></div></a>
+  </aside>
+
+    <main class="main">
+        <div class="search">
+            <i class="fa-solid fa-search" style="color: #94a3b8;"></i>
+            <input type="text" id="searchInput" placeholder="Search the network...">
+        </div>
+
+        <div class="page-header" style="margin-bottom: 30px;">
+            <h1 style="color: #1e40af;">Network Directory</h1>
+            <p id="totalFound" style="color: #64748b;">Loading members...</p>
+        </div>
+
+        <div class="alumni-grid" id="alumniGrid">
+            </div>
+    </main>
+</div>
+
+<script>
+    async function fetchNetwork() {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/get-all-users');
+            const users = await response.json();
+            
+            const grid = document.getElementById('alumniGrid');
+            const totalText = document.getElementById('totalFound');
+            
+            grid.innerHTML = '';
+            totalText.textContent = `Showing top ${users.length} members from the database`;
+
+            if (users.length === 0) {
+                grid.innerHTML = '<p>No members found in the database.</p>';
+                return;
+            }
+
+            const colors = ['#2563eb', '#7c3aed', '#db2777', '#16a34a', '#d97706'];
+
+            users.forEach((user, index) => {
+                const initials = user.username.substring(0, 2).toUpperCase();
+                const isAlumni = user.role === 'alumni';
+                const color = colors[index % colors.length];
+
+                const card = `
+                    <div class="alumni-card">
+                        <div class="avatar" style="background: ${color}">${initials}</div>
+                        <h3 style="margin-bottom: 5px;">${user.username}</h3>
+                        <span class="role-badge ${isAlumni ? 'role-alumni' : ''}">
+                            ${isAlumni ? '🎓 Alumni' : '📖 Student'}
+                        </span>
+                        
+                        <div class="info-box">
+                            <p><i class="fa-solid fa-envelope"></i> ${user.email}</p>
+                            <p><i class="fa-solid fa-check-circle"></i> Verified Profile</p>
+                        </div>
+
+                        <button class="btn-connect" onclick="alert('Request sent to ${user.username}')">
+                            Connect
+                        </button>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        } catch (error) {
+            console.error("Error fetching network:", error);
+            document.getElementById('alumniGrid').innerHTML = '<p>Check if Flask server is running.</p>';
+        }
+    }
+
+    // Run on page load
+    window.onload = fetchNetwork;
+
+    // Search Logic
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll('.alumni-card').forEach(card => {
+            card.style.display = card.innerText.toLowerCase().includes(term) ? 'block' : 'none';
+        });
+    });
+</script>
+</body>
+</html>

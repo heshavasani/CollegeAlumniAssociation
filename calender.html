@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Alumni Dashboard - Event Calendar</title>
+
+    <style>
+
+        * {
+
+            margin: 0;
+
+            padding: 0;
+
+            box-sizing: border-box;
+
+        }
+
+
+
+        body {
+
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            background: #F5F7FA;
+
+            min-height: 100vh;
+
+        }
+
+
+
+        /* Dashboard Header */
+
+        .dashboard-header {
+
+            background: white;
+
+            padding: 15px 30px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+        }
+
+
+
+        .logo {
+
+            font-size: 24px;
+
+            font-weight: 600;
+
+            color: #5B8DEE;
+
+        }
+
+
+
+        .header-right {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+
+
+        /* Calendar Icon Button */
+
+        .calendar-icon-btn {
+
+            position: relative;
+
+            background: transparent;
+
+            border: none;
+
+            cursor: pointer;
+
+            padding: 8px;
+
+            transition: all 0.3s ease;
+
+        }
+
+
+
+        .calendar-icon-btn:hover {
+
+            transform: scale(1.1);
+
+        }
+
+
+
+        .calendar-icon-btn svg {
+
+            width: 28px;
+
+            height: 28px;
+
+            fill: #5B8DEE;
+
+        }
+
+
+
+        .notification-badge {
+
+            position: absolute;
+
+            top: 2px;
+
+            right: 2px;
+
+            background: #FF6B6B;
+
+            color: white;
+
+            border-radius: 50%;
+
+            width: 18px;
+
+            height: 18px;
+
+            font-size: 10px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: 600;
+
+        }
+
+
+
+        .profile-icon {
+
+            background: #5B8DEE;
+
+            border-radius: 50%;
+
+            width: 40px;
+
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: white;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            position: relative;
+
+            font-size: 16px;
+
+        }
+
+
+
+        .profile-badge {
+
+            position: absolute;
+
+            top: -3px;
+
+            right: -3px;
+
+            background: #FF6B6B;
+
+            color: white;
+
+            border-radius: 50%;
+
+            width: 18px;
+
+            height: 18px;
+
+            font-size: 10px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: 600;
+
+        }
+
+
+
+        /* Calendar Modal */
+
+        .calendar-modal {
+
+            display: none;
+
+            position: fixed;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            background: rgba(0, 0, 0, 0.4);
+
+            z-index: 1000;
+
+            justify-content: center;
+
+            align-items: center;
+
+            animation: fadeIn 0.2s ease;
+
+        }
+
+
+
+        .calendar-modal.active {
+
+            display: flex;
+
+        }
+
+
+
+        @keyframes fadeIn {
+
+            from { opacity: 0; }
+
+            to { opacity: 1; }
+
+        }
+
+
+
+        /* Calendar Container */
+
+        .calendar-container {
+
+            background: white;
+
+            border-radius: 16px;
+
+            width: 90%;
+
+            max-width: 1000px;
+
+            height: 85vh;
+
+            max-height: 650px;
+
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+
+            animation: slideUp 0.3s ease;
+
+            display: flex;
+
+            flex-direction: column;
+
+            overflow: hidden;
+
+        }
+
+
+
+        @keyframes slideUp {
+
+            from {
+
+                transform: translateY(30px);
+
+                opacity: 0;
+
+            }
+
+            to {
+
+                transform: translateY(0);
+
+                opacity: 1;
+
+            }
+
+        }
+
+
+
+        /* Calendar Header */
+
+        .calendar-header {
+
+            padding: 20px 25px;
+
+            background: white;
+
+            border-bottom: 1px solid #E8ECF1;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+        }
+
+
+
+        .calendar-header h2 {
+
+            font-size: 20px;
+
+            font-weight: 600;
+
+            color: #2C3E50;
+
+        }
+
+
+
+        .close-btn {
+
+            background: transparent;
+
+            border: none;
+
+            color: #95A5A6;
+
+            width: 32px;
+
+            height: 32px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-size: 24px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            transition: all 0.2s ease;
+
+        }
+
+
+
+        .close-btn:hover {
+
+            background: #F5F7FA;
+
+            color: #2C3E50;
+
+        }
+
+
+
+        /* Split Content */
+
+        .calendar-content {
+
+            display: flex;
+
+            flex: 1;
+
+            overflow: hidden;
+
+        }
+
+
+
+        /* Left Side - Calendar */
+
+        .calendar-left {
+
+            width: 50%;
+
+            border-right: 1px solid #E8ECF1;
+
+            display: flex;
+
+            flex-direction: column;
+
+            background: #FAFBFC;
+
+        }
+
+
+
+        .calendar-nav {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 20px 25px;
+
+            background: white;
+
+            border-bottom: 1px solid #E8ECF1;
+
+        }
+
+
+
+        .nav-btn {
+
+            background: transparent;
+
+            color: #5B8DEE;
+
+            border: 1px solid #E8ECF1;
+
+            padding: 8px 16px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-weight: 500;
+
+            font-size: 14px;
+
+            transition: all 0.2s ease;
+
+        }
+
+
+
+        .nav-btn:hover {
+
+            background: #F0F5FF;
+
+            border-color: #5B8DEE;
+
+        }
+
+
+
+        .current-month {
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            color: #2C3E50;
+
+        }
+
+
+
+        .calendar-grid {
+
+            padding: 20px;
+
+            overflow-y: auto;
+
+            flex: 1;
+
+        }
+
+
+
+        .weekdays {
+
+            display: grid;
+
+            grid-template-columns: repeat(7, 1fr);
+
+            gap: 8px;
+
+            margin-bottom: 12px;
+
+        }
+
+
+
+        .weekday {
+
+            text-align: center;
+
+            font-weight: 600;
+
+            color: #7F8C8D;
+
+            padding: 8px 4px;
+
+            font-size: 12px;
+
+        }
+
+
+
+        .days {
+
+            display: grid;
+
+            grid-template-columns: repeat(7, 1fr);
+
+            gap: 8px;
+
+        }
+
+
+
+        .day {
+
+            aspect-ratio: 1;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            transition: all 0.2s ease;
+
+            padding: 6px;
+
+            position: relative;
+
+            background: white;
+
+            border: 1px solid transparent;
+
+        }
+
+
+
+        .day:hover {
+
+            border-color: #5B8DEE;
+
+            background: #F0F5FF;
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 2px 8px rgba(91, 141, 238, 0.15);
+
+        }
+
+
+
+        .day.other-month {
+
+            opacity: 0.3;
+
+        }
+
+
+
+        .day.today {
+
+            background: #FFF9E6;
+
+            border: 1.5px solid #FFC107;
+
+            font-weight: 600;
+
+        }
+
+
+
+        .day.selected {
+
+            background: #5B8DEE;
+
+            color: white;
+
+            border-color: #5B8DEE;
+
+        }
+
+
+
+        .day.selected:hover {
+
+            background: #4A7DD7;
+
+        }
+
+
+
+        /* EVENT PIN - More visible with glow */
+
+        .day.has-event::after {
+
+            content: '';
+
+            position: absolute;
+
+            bottom: 6px;
+
+            width: 6px;
+
+            height: 6px;
+
+            background: #5B8DEE;
+
+            border-radius: 50%;
+
+            box-shadow: 0 0 4px rgba(91, 141, 238, 0.6);
+
+        }
+
+
+
+        .day.selected.has-event::after {
+
+            background: white;
+
+            box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+
+        }
+
+
+
+        .day.today.has-event::after {
+
+            background: #FFC107;
+
+            box-shadow: 0 0 4px rgba(255, 193, 7, 0.6);
+
+        }
+
+
+
+        .day-number {
+
+            font-size: 13px;
+
+            font-weight: 500;
+
+        }
+
+
+
+        /* Right Side - Event Details */
+
+        .calendar-right {
+
+            width: 50%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            background: white;
+
+        }
+
+
+
+        .event-header {
+
+            padding: 20px 25px;
+
+            border-bottom: 1px solid #E8ECF1;
+
+        }
+
+
+
+        .event-date-title {
+
+            font-size: 14px;
+
+            color: #7F8C8D;
+
+            font-weight: 500;
+
+            margin-bottom: 5px;
+
+        }
+
+
+
+        .event-date-large {
+
+            font-size: 24px;
+
+            font-weight: 600;
+
+            color: #2C3E50;
+
+        }
+
+
+
+        .event-list-container {
+
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 20px 25px;
+
+        }
+
+
+
+        .event-card {
+
+            background: #FAFBFC;
+
+            border-radius: 10px;
+
+            padding: 16px;
+
+            margin-bottom: 12px;
+
+            cursor: pointer;
+
+            transition: all 0.2s ease;
+
+            border-left: 3px solid #5B8DEE;
+
+        }
+
+
+
+        .event-card:hover {
+
+            background: #F0F5FF;
+
+            transform: translateX(4px);
+
+            box-shadow: 0 2px 8px rgba(91, 141, 238, 0.1);
+
+        }
+
+
+
+        .event-time {
+
+            font-size: 12px;
+
+            color: #5B8DEE;
+
+            font-weight: 600;
+
+            margin-bottom: 6px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 4px;
+
+        }
+
+
+
+        .event-title {
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            color: #2C3E50;
+
+            margin-bottom: 6px;
+
+        }
+
+
+
+        .event-location {
+
+            font-size: 13px;
+
+            color: #7F8C8D;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 4px;
+
+        }
+
+
+
+        .event-category {
+
+            display: inline-block;
+
+            background: #E3F2FD;
+
+            color: #5B8DEE;
+
+            padding: 4px 10px;
+
+            border-radius: 12px;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            margin-top: 8px;
+
+        }
+
+
+
+        .no-events {
+
+            text-align: center;
+
+            color: #95A5A6;
+
+            padding: 60px 20px;
+
+        }
+
+
+
+        .no-events-icon {
+
+            font-size: 48px;
+
+            margin-bottom: 12px;
+
+            opacity: 0.3;
+
+        }
+
+
+
+        .no-events-text {
+
+            font-size: 14px;
+
+            font-style: italic;
+
+        }
+
+
+
+        /* Loading State */
+
+        .loading {
+
+            text-align: center;
+
+            padding: 60px 20px;
+
+            color: #95A5A6;
+
+        }
+
+
+
+        .spinner {
+
+            border: 3px solid #F0F5FF;
+
+            border-top: 3px solid #5B8DEE;
+
+            border-radius: 50%;
+
+            width: 36px;
+
+            height: 36px;
+
+            animation: spin 0.8s linear infinite;
+
+            margin: 0 auto 15px;
+
+        }
+
+
+
+        @keyframes spin {
+
+            0% { transform: rotate(0deg); }
+
+            100% { transform: rotate(360deg); }
+
+        }
+
+
+
+        /* Responsive Design */
+
+        @media (max-width: 768px) {
+
+            .calendar-container {
+
+                width: 95%;
+
+                height: 90vh;
+
+                max-height: none;
+
+            }
+
+
+
+            .calendar-content {
+
+                flex-direction: column;
+
+            }
+
+
+
+            .calendar-left,
+
+            .calendar-right {
+
+                width: 100%;
+
+                border-right: none;
+
+            }
+
+
+
+            .calendar-left {
+
+                max-height: 50%;
+
+                border-bottom: 1px solid #E8ECF1;
+
+            }
+
+
+
+            .day {
+
+                padding: 4px;
+
+            }
+
+
+
+            .day-number {
+
+                font-size: 12px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="dashboard-header">
+
+        <div class="logo">Alumni Network</div>
+
+        <div class="header-right">
+
+            <button class="calendar-icon-btn" id="calendarBtn" title="Event Calendar">
+
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+
+                    <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z"/>
+
+                </svg>
+
+                <span class="notification-badge" id="eventBadge">0</span>
+
+            </button>
+
+
+
+            <div class="profile-icon">
+
+                U
+
+                <span class="profile-badge">3</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="calendar-modal active" id="calendarModal">
+
+        <div class="calendar-container">
+
+            <div class="calendar-header">
+
+                <h2>📅 Event Calendar</h2>
+
+                <button class="close-btn" id="closeBtn">×</button>
+
+            </div>
+
+
+
+            <div class="calendar-content">
+
+                <div class="calendar-left">
+
+                    <div class="calendar-nav">
+
+                        <button class="nav-btn" id="prevMonth">← Prev</button>
+
+                        <div class="current-month" id="currentMonth"></div>
+
+                        <button class="nav-btn" id="nextMonth">Next →</button>
+
+                    </div>
+
+
+
+                    <div class="calendar-grid">
+
+                        <div class="weekdays">
+
+                            <div class="weekday">Sun</div>
+
+                            <div class="weekday">Mon</div>
+
+                            <div class="weekday">Tue</div>
+
+                            <div class="weekday">Wed</div>
+
+                            <div class="weekday">Thu</div>
+
+                            <div class="weekday">Fri</div>
+
+                            <div class="weekday">Sat</div>
+
+                        </div>
+
+                        <div class="days" id="calendarDays"></div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="calendar-right">
+
+                    <div class="event-header">
+
+                        <div class="event-date-title">Events for</div>
+
+                        <div class="event-date-large" id="selectedDateTitle">Today</div>
+
+                    </div>
+
+
+
+                    <div class="event-list-container" id="eventsList"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+
+        // Configuration - Update to your Flask backend URL
+
+        const API_BASE_URL = 'http://127.0.0.1:5000/api';
+
+       
+
+        // Global state
+
+        let currentDate = new Date();
+
+        let selectedDate = new Date();
+
+        let allEvents = [];
+
+
+
+        // DOM Elements
+
+        const calendarBtn = document.getElementById('calendarBtn');
+
+        const calendarModal = document.getElementById('calendarModal');
+
+        const closeBtn = document.getElementById('closeBtn');
+
+        const prevMonthBtn = document.getElementById('prevMonth');
+
+        const nextMonthBtn = document.getElementById('nextMonth');
+
+        const currentMonthEl = document.getElementById('currentMonth');
+
+        const calendarDaysEl = document.getElementById('calendarDays');
+
+        const eventsListEl = document.getElementById('eventsList');
+
+        const selectedDateTitleEl = document.getElementById('selectedDateTitle');
+
+        const eventBadge = document.getElementById('eventBadge');
+
+
+
+        // Event Listeners
+
+        calendarBtn.addEventListener('click', openCalendar);
+
+        closeBtn.addEventListener('click', closeCalendar);
+
+        prevMonthBtn.addEventListener('click', () => changeMonth(-1));
+
+        nextMonthBtn.addEventListener('click', () => changeMonth(1));
+
+       
+
+        calendarModal.addEventListener('click', (e) => {
+
+            if (e.target === calendarModal) {
+
+                closeCalendar();
+
+            }
+
+        });
+
+
+
+        // Functions
+
+        function openCalendar() {
+
+            calendarModal.classList.add('active');
+
+            loadEvents();
+
+        }
+
+
+
+        function closeCalendar() {
+
+            calendarModal.classList.remove('active');
+
+        }
+
+
+
+        function changeMonth(direction) {
+
+            currentDate.setMonth(currentDate.getMonth() + direction);
+
+            renderCalendar();
+
+        }
+
+
+
+        async function loadEvents() {
+
+            try {
+
+                eventsListEl.innerHTML = '<div class="loading"><div class="spinner"></div>Loading events...</div>';
+
+               
+
+                console.log('📡 Fetching events from:', `${API_BASE_URL}/events`);
+
+                const response = await fetch(`${API_BASE_URL}/events`);
+
+                const data = await response.json();
+
+               
+
+                console.log('✅ Events loaded:', data);
+
+               
+
+                if (data.success) {
+
+                    allEvents = data.events;
+
+                    updateEventBadge();
+
+                    renderCalendar();
+
+                    displayEventsForDate(selectedDate);
+
+                } else {
+
+                    throw new Error('Failed to load events');
+
+                }
+
+            } catch (error) {
+
+                console.error('❌ Error loading events:', error);
+
+                eventsListEl.innerHTML = `
+
+                    <div class="no-events">
+
+                        <div class="no-events-icon">⚠️</div>
+
+                        <div class="no-events-text">Failed to load events. Check console for details.</div>
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+
+        function updateEventBadge() {
+
+            const upcomingEvents = allEvents.filter(event => {
+
+                const eventDate = new Date(event.date);
+
+                const today = new Date();
+
+                today.setHours(0, 0, 0, 0);
+
+                return eventDate >= today;
+
+            });
+
+            eventBadge.textContent = upcomingEvents.length;
+
+        }
+
+
+
+        function renderCalendar() {
+
+            const year = currentDate.getFullYear();
+
+            const month = currentDate.getMonth();
+
+           
+
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+
+            currentMonthEl.textContent = `${monthNames[month]} ${year}`;
+
+
+
+            const firstDay = new Date(year, month, 1).getDay();
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+
+
+            calendarDaysEl.innerHTML = '';
+
+
+
+            for (let i = firstDay - 1; i >= 0; i--) {
+
+                const day = daysInPrevMonth - i;
+
+                const dayEl = createDayElement(day, true, year, month - 1);
+
+                calendarDaysEl.appendChild(dayEl);
+
+            }
+
+
+
+            for (let day = 1; day <= daysInMonth; day++) {
+
+                const dayEl = createDayElement(day, false, year, month);
+
+                calendarDaysEl.appendChild(dayEl);
+
+            }
+
+
+
+            const totalCells = calendarDaysEl.children.length;
+
+            const remainingCells = 42 - totalCells;
+
+            for (let day = 1; day <= remainingCells; day++) {
+
+                const dayEl = createDayElement(day, true, year, month + 1);
+
+                calendarDaysEl.appendChild(dayEl);
+
+            }
+
+        }
+
+
+
+        function createDayElement(day, isOtherMonth, year, month) {
+
+            const dayEl = document.createElement('div');
+
+            dayEl.className = 'day';
+
+           
+
+            if (isOtherMonth) {
+
+                dayEl.classList.add('other-month');
+
+            }
+
+
+
+            const date = new Date(year, month, day);
+
+            const dateStr = formatDate(date);
+
+           
+
+            const today = new Date();
+
+            today.setHours(0, 0, 0, 0);
+
+            if (date.getTime() === today.getTime()) {
+
+                dayEl.classList.add('today');
+
+            }
+
+
+
+            if (selectedDate && date.getTime() === selectedDate.getTime()) {
+
+                dayEl.classList.add('selected');
+
+            }
+
+
+
+            // CHECK IF THIS DATE HAS EVENTS - ADD PIN
+
+            const dayEvents = getEventsForDate(dateStr);
+
+            if (dayEvents.length > 0) {
+
+                dayEl.classList.add('has-event');
+
+                console.log(`📌 Pin added for ${dateStr} - ${dayEvents.length} event(s)`);
+
+            }
+
+
+
+            const dayNumber = document.createElement('div');
+
+            dayNumber.className = 'day-number';
+
+            dayNumber.textContent = day;
+
+            dayEl.appendChild(dayNumber);
+
+
+
+            dayEl.addEventListener('click', () => selectDate(date));
+
+
+
+            return dayEl;
+
+        }
+
+
+
+        function selectDate(date) {
+
+            selectedDate = new Date(date);
+
+            renderCalendar();
+
+            displayEventsForDate(date);
+
+        }
+
+
+
+        function displayEventsForDate(date) {
+
+            const dateStr = formatDate(date);
+
+            const events = getEventsForDate(dateStr);
+
+           
+
+            const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+
+            selectedDateTitleEl.textContent = date.toLocaleDateString('en-US', options);
+
+
+
+            if (events.length === 0) {
+
+                eventsListEl.innerHTML = `
+
+                    <div class="no-events">
+
+                        <div class="no-events-icon">📅</div>
+
+                        <div class="no-events-text">No events scheduled for this date</div>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+
+            eventsListEl.innerHTML = events.map(event => `
+
+                <div class="event-card">
+
+                    <div class="event-time">
+
+                        <span>🕒</span>
+
+                        <span>${event.time}</span>
+
+                    </div>
+
+                    <div class="event-title">${event.title}</div>
+
+                    <div class="event-location">
+
+                        <span>📍</span>
+
+                        <span>${event.location}</span>
+
+                    </div>
+
+                    <span class="event-category">${event.category}</span>
+
+                </div>
+
+            `).join('');
+
+        }
+
+
+
+        function getEventsForDate(dateStr) {
+
+            return allEvents.filter(event => event.date === dateStr);
+
+        }
+
+
+
+        function formatDate(date) {
+
+            const year = date.getFullYear();
+
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+
+            const day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+
+        }
+        // Initialize
+
+        console.log('🚀 Calendar initializing...');
+
+        loadEvents();
+
+        renderCalendar();
+
+    </script>
+
+</body>
+
+</html>

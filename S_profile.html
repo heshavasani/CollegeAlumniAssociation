@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Profile | Alumni Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        body { background: linear-gradient(135deg, #f7fbff 0%, #e8f3ff 100%); color: #0f172a; min-height: 100vh; }
+
+        .main { padding: 40px 50px; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+        /* Top Navigation */
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .back-btn { 
+            display: flex; align-items: center; gap: 8px; background: white; padding: 10px 20px; 
+            border-radius: 30px; box-shadow: 0 2px 12px rgba(37, 99, 235, 0.08); 
+            cursor: pointer; transition: 0.3s; text-decoration: none; color: #2563eb; font-weight: 500; 
+        }
+        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(37, 99, 235, 0.15); }
+
+        /* Profile Header Card */
+        .profile-header { 
+            background: white; padding: 40px; border-radius: 24px; text-align: center;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.06); margin-bottom: 30px; position: relative;
+        }
+        .profile-pic {
+            width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #60a5fa, #2563eb);
+            margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 48px; font-weight: 700; box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+        }
+        .profile-name { font-size: 32px; font-weight: 700; color: #1e40af; margin-bottom: 5px; }
+        .profile-title { color: #64748b; font-size: 16px; margin-bottom: 25px; }
+
+        /* Buttons */
+        .btn-group { display: flex; justify-content: center; gap: 15px; }
+        .edit-btn, .save-btn {
+            padding: 12px 30px; border-radius: 30px; border: none; cursor: pointer;
+            font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.3s;
+        }
+        .edit-btn { background: #dbeafe; color: #2563eb; }
+        .save-btn { background: #2563eb; color: white; display: none; }
+        .edit-btn:hover { background: #2563eb; color: white; }
+
+        /* Grid Layout */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .info-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.05); }
+        .card-title { font-size: 18px; font-weight: 600; color: #1e40af; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+        /* Details List */
+        .detail-item { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
+        .detail-item:last-child { border-bottom: none; }
+        .icon-box { width: 35px; height: 35px; background: #f0f7ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #2563eb; }
+        .detail-label { font-size: 11px; color: #64748b; text-transform: uppercase; }
+        .detail-value { font-size: 14px; font-weight: 600; }
+
+        /* Skills Tags */
+        .tags-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .tag { background: #f1f5f9; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+        .remove-tag { color: #ef4444; cursor: pointer; display: none; }
+
+        /* Editable Inputs */
+        .edit-input { width: 100%; border: 1.5px solid #cbd5e1; padding: 5px 10px; border-radius: 6px; font-size: 14px; outline: none; }
+        .edit-input:focus { border-color: #2563eb; }
+
+        @media (max-width: 768px) { .info-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="main">
+    <div class="topbar">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+    </div>
+
+    <div class="profile-header">
+        <div class="profile-pic" id="pfpInitials">U</div>
+        <h1 class="profile-name" id="pName">User Name</h1>
+        <p class="profile-title" id="pRole">Loading...</p>
+        
+        <div class="btn-group">
+            <button class="edit-btn" id="editTrigger"><i class="fa-solid fa-pen"></i> Edit Profile</button>
+            <button class="save-btn" id="saveTrigger"><i class="fa-solid fa-check"></i> Save Changes</button>
+        </div>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <h2 class="card-title"><i class="fa-solid fa-graduation-cap"></i> Academic Details</h2>
+            <div class="detail-item">
+                <div class="icon-box"><i class="fa-solid fa-university"></i></div>
+                <div>
+                    <div class="detail-label">College</div>
+                    <div class="detail-value" id="pCollege">Not Set</div>
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="icon-box"><i class="fa-solid fa-book"></i></div>
+                <div>
+                    <div class="detail-label">Department</div>
+                    <div class="detail-value" id="pDept">Loading...</div>
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="icon-box"><i class="fa-solid fa-calendar-check"></i></div>
+                <div>
+                    <div class="detail-label">Batch Year</div>
+                    <div class="detail-value" id="pYear">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h2 class="card-title"><i class="fa-solid fa-star"></i> Skills</h2>
+            <div class="tags-container" id="skillsContainer">
+                <span class="subtitle" style="font-size:13px; color:#64748b;">No skills added yet.</span>
+            </div>
+            <div id="addSkillGroup" style="display:none; margin-top: 15px;">
+                <input type="text" id="newSkillInput" class="edit-input" placeholder="Enter skill..." style="width: 70%;">
+                <button class="edit-btn" id="addSkillBtn" style="display:inline-block; padding: 6px 15px;">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const editBtn = document.getElementById('editTrigger');
+    const saveBtn = document.getElementById('saveTrigger');
+    const skillsContainer = document.getElementById('skillsContainer');
+    const addSkillArea = document.getElementById('addSkillGroup');
+
+    // Helper to add skill tag to UI
+    function addSkillTag(name) {
+        if (!name || name === "") return;
+        const span = document.createElement('span');
+        span.className = 'tag';
+        span.innerHTML = `${name} <i class="fa-solid fa-xmark remove-tag"></i>`;
+        skillsContainer.appendChild(span);
+    }
+
+    // 1. Initial Load: Fetch data from DB
+    window.addEventListener('DOMContentLoaded', async () => {
+        const userData = JSON.parse(localStorage.getItem('userSession'));
+        // if (!userData || !userData.id) {
+        //     window.location.href = 'login.html';
+        //     return;
+        // }
+
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/get-profile/${userData.id}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById('pName').innerText = data.username;
+                document.getElementById('pRole').innerText = data.role.toUpperCase();
+                document.getElementById('pfpInitials').innerText = data.username.charAt(0).toUpperCase();
+                
+                // Fields from User table (Fixed)
+                document.getElementById('pDept').innerText = data.department;
+                document.getElementById('pYear').innerText = data.batch_year;
+
+                // Field from Skill table (Editable)
+                const clgElem = document.getElementById('pCollege');
+                clgElem.innerText = data.college;
+                clgElem.style.color = (data.college === "Not Set") ? "#94a3b8" : "#0f172a";
+
+                // Load Skills
+                skillsContainer.innerHTML = '';
+                if (data.skills && data.skills.length > 0) {
+                    data.skills.forEach(skill => addSkillTag(skill));
+                } else {
+                    skillsContainer.innerHTML = '<span class="subtitle" style="font-size:13px; color:#64748b;">No skills added yet.</span>';
+                }
+            }
+        } catch (error) {
+            console.error("Load error:", error);
+        }
+    });
+
+    // 2. Enable Edit Mode
+    editBtn.addEventListener('click', () => {
+        editBtn.style.display = 'none';
+        saveBtn.style.display = 'inline-flex';
+        addSkillArea.style.display = 'block';
+
+        // Make ONLY College editable
+        const clgElem = document.getElementById('pCollege');
+        const currentClg = clgElem.innerText === "Not Set" ? "" : clgElem.innerText;
+        clgElem.innerHTML = `<input type="text" class="edit-input" id="collegeInput" value="${currentClg}" placeholder="Enter College Name">`;
+
+        document.querySelectorAll('.remove-tag').forEach(icon => icon.style.display = 'inline');
+    });
+
+    // 3. Save Changes
+    saveBtn.addEventListener('click', async () => {
+        const userData = JSON.parse(localStorage.getItem('userSession'));
+        const collegeValue = document.getElementById('collegeInput').value || "Not Set";
+        const skillsArray = Array.from(skillsContainer.querySelectorAll('.tag')).map(el => el.innerText.trim());
+
+        const payload = {
+            college: collegeValue,
+            skills: skillsArray
+        };
+
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/update-profile/${userData.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert("Profile Saved!");
+                location.reload(); 
+            }
+        } catch (error) {
+            alert("Connection failed.");
+        }
+    });
+
+    // Skill Logic
+    document.getElementById('addSkillBtn').addEventListener('click', () => {
+        const input = document.getElementById('newSkillInput');
+        if (input.value.trim()) {
+            if (skillsContainer.querySelector('.subtitle')) skillsContainer.innerHTML = '';
+            addSkillTag(input.value.trim());
+            input.value = "";
+            document.querySelectorAll('.remove-tag').forEach(icon => icon.style.display = 'inline');
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if(e.target.classList.contains('remove-tag')) e.target.parentElement.remove();
+    });
+</script>
+</body>
+</html>

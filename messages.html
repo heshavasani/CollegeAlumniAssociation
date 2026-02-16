@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alumni Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        body { background: #f1f5f9; height: 100vh; overflow: hidden; }
+
+        .container { 
+            display: grid; 
+            grid-template-columns: 300px 1fr; 
+            height: 100vh; 
+            width: 100vw;
+        }
+
+        .sidebar { 
+            background: white; 
+            border-right: 1px solid #e5e7eb; 
+            display: flex; 
+            flex-direction: column; 
+            overflow-y: auto; 
+        }
+
+        .header { padding: 25px 20px; font-weight: 700; border-bottom: 1px solid #e5e7eb; font-size: 1.2rem; }
+
+        .contact { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: 0.2s; }
+        .contact:hover { background: #f8fafc; }
+        .contact.active { background: #e2e8f0; border-left: 4px solid #2563eb; }
+        .status { font-size: 11px; color: #64748b; text-transform: capitalize; }
+
+        .chat { 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            background: #f8fafc;
+        }
+
+        .chat-header { 
+            padding: 20px; 
+            background: white; 
+            border-bottom: 1px solid #e5e7eb; 
+            font-weight: 600;
+            flex-shrink: 0; 
+        }
+
+        .chat-box { 
+            flex: 1; 
+            padding: 20px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+
+        .msg { 
+            max-width: 70%; 
+            padding: 10px 16px; 
+            border-radius: 18px; 
+            font-size: 14px; 
+            line-height: 1.5;
+            position: relative;
+            word-wrap: break-word;
+        }
+        .sent { 
+            align-self: flex-end; 
+            background: #2563eb; 
+            color: white; 
+            border-bottom-right-radius: 2px; 
+        }
+        .received { 
+            align-self: flex-start; 
+            background: white; 
+            border: 1px solid #e5e7eb; 
+            color: #1e293b;
+            border-bottom-left-radius: 2px; 
+        }
+
+        .input-area { 
+            padding: 20px; 
+            background: white; 
+            border-top: 1px solid #e5e7eb; 
+            display: flex; 
+            gap: 12px; 
+            align-items: center;
+            flex-shrink: 0; 
+        }
+
+        .input-area input { 
+            flex: 1; 
+            padding: 12px 20px; 
+            border-radius: 25px; 
+            border: 1px solid #e5e7eb; 
+            outline: none;
+            font-size: 14px;
+            background: #f1f5f9;
+        }
+
+        button { 
+            border: none; 
+            background: #2563eb; 
+            color: white; 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        button:hover { background: #1d4ed8; transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="sidebar">
+        <div class="header">Messages</div>
+        <div style="padding: 10px 20px;">
+            <input type="text" id="userSearch" placeholder="Search for users..." 
+                onkeyup="searchUsers()" 
+                style="width: 100%; padding: 8px; border-radius: 20px; border: 1px solid #ddd;">
+        </div>
+        <div id="contactList"></div>
+    </div>
+
+    <div class="chat">
+        <div class="chat-header" id="chatHeader">Select a contact to start chatting</div>
+        <div class="chat-box" id="chatBox"></div>
+
+        <div class="input-area">
+            <input id="msgInput" placeholder="Type message...">
+            <button onclick="sendMessage()">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Session Setup - Matches your profile logic
+    const sessionData = JSON.parse(localStorage.getItem("userSession") || localStorage.getItem("user"));
+
+    if (!sessionData || !sessionData.id) {
+        alert("Session not found. Please log in.");
+        window.location.href = "login.html";
+    }
+
+    const currentSender = sessionData.id;
+    let currentReceiver = null;
+
+    // 2. Load Contacts (History)
+    async function loadContacts() {
+        try {
+            // Updated to match your backend route
+            const res = await fetch(`http://127.0.0.1:5000/chat-users/${currentSender}`);
+            const users = await res.json();
+            
+            const list = document.getElementById("contactList");
+            list.innerHTML = "";
+
+            if (users.length === 0) {
+                list.innerHTML = "<p style='text-align:center; color:gray; font-size:12px; margin-top:20px;'>No recent chats. Search to start one!</p>";
+            }
+
+            users.forEach(u => {
+                const div = document.createElement("div");
+                div.className = "contact";
+                div.id = `user-${u.id}`;
+                if (currentReceiver === u.id) div.classList.add('active'); // Keep active state on refresh
+                
+                div.innerHTML = `
+                    <strong>${u.username}</strong><br>
+                    <span class="status">${u.role} | ${u.dept}</span>`;
+                
+                div.onclick = () => openChat(u.id, u.username);
+                list.appendChild(div);
+            });
+        } catch (err) {
+            console.error("Error loading contacts:", err);
+        }
+    }
+
+    // 3. Search Users - Integrated with your Flask search logic
+    async function searchUsers() {
+        const query = document.getElementById("userSearch").value.trim();
+        
+        if (query.length === 0) {
+            loadContacts(); 
+            return;
+        }
+
+        try {
+            // Matches backend: User.username.ilike(f"%{search_query}%")
+            const res = await fetch(`http://127.0.0.1:5000/chat-users/${currentSender}?search=${query}`);
+            const users = await res.json();
+            
+            const list = document.getElementById("contactList");
+            list.innerHTML = ""; 
+
+            users.forEach(u => {
+                const div = document.createElement("div");
+                div.className = "contact";
+                div.innerHTML = `
+                    <strong>${u.username}</strong><br>
+                    <span class="status">${u.role} | ${u.dept}</span>`;
+                div.onclick = () => openChat(u.id, u.username);
+                list.appendChild(div);
+            });
+        } catch (err) {
+            console.error("Search error:", err);
+        }
+    }
+
+    // 4. Load Messages - Matches @app.route("/get-messages/<int:u1>/<int:u2>")
+    async function loadMessages() {
+        if (!currentReceiver) return;
+
+        try {
+            const res = await fetch(`http://127.0.0.1:5000/get-messages/${currentSender}/${currentReceiver}`);
+            const messages = await res.json();
+
+            const box = document.getElementById("chatBox");
+            const isAtBottom = box.scrollHeight - box.clientHeight <= box.scrollTop + 1;
+
+            box.innerHTML = "";
+            if (messages.length === 0) {
+                box.innerHTML = `<p style='text-align:center; color:gray; font-size:12px; margin-top:20px;'>No messages yet. Say hi!</p>`;
+            }
+
+            messages.forEach(m => {
+                const div = document.createElement("div");
+                div.className = "msg " + (m.sender == currentSender ? "sent" : "received");
+                div.innerHTML = `${m.content}<div style="font-size:10px; opacity:.6; margin-top:4px;">${m.time}</div>`;
+                box.appendChild(div);
+            });
+
+            // Only auto-scroll if user was already at the bottom
+            if (isAtBottom) box.scrollTop = box.scrollHeight;
+        } catch (err) {
+            console.error("Error loading messages:", err);
+        }
+    }
+
+    // 5. Send Message - Matches @app.route("/send-message")
+    async function sendMessage() {
+        const input = document.getElementById("msgInput");
+        const content = input.value.trim();
+        if (!content || !currentReceiver) return;
+
+        try {
+            const res = await fetch("http://127.0.0.1:5000/send-message", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    sender: currentSender,
+                    receiver: currentReceiver,
+                    content: content
+                })
+            });
+
+            if (res.ok) {
+                input.value = "";
+                await loadMessages();
+                loadContacts(); 
+            }
+        } catch (err) {
+            alert("Failed to send message.");
+        }
+    }
+
+    function openChat(id, name) {
+        currentReceiver = id;
+        document.getElementById("chatHeader").innerText = "Chatting with: " + name;
+        
+        document.querySelectorAll('.contact').forEach(c => c.classList.remove('active'));
+        const activeElem = document.getElementById(`user-${id}`);
+        if(activeElem) activeElem.classList.add('active');
+
+        loadMessages();
+    }
+
+    document.getElementById("msgInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
+    });
+
+    // Initial load
+    loadContacts();
+    setInterval(loadMessages, 3000); // Poll for new messages every 3 seconds
+</script>
+
+</body>
+</html>

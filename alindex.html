@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Alumni Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #f7fbff 0%, #e8f3ff 100%);
+  color: #0f172a;
+  overflow-x: hidden;
+}
+
+/* ---------- LAYOUT ---------- */
+.container {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  min-height: 100vh;
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+  background: linear-gradient(180deg, #e8f3ff 0%, #dbeafe 100%);
+  padding: 28px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  box-shadow: 4px 0 20px rgba(37, 99, 235, 0.08);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.nav-item {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 12px;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.nav-item:hover, .nav-item.active {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1e40af;
+}
+
+.tooltip {
+  position: absolute;
+  left: 70px;
+  background: #1e40af;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 100;
+}
+
+.nav-item:hover .tooltip { opacity: 1; }
+
+/* ---------- MAIN ---------- */
+.main {
+  padding: 28px 50px;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search {
+  width: 420px;
+  background: white;
+  padding: 14px 22px;
+  border-radius: 30px;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.08);
+  display: flex;
+  align-items: center;
+}
+
+.search input {
+  width: 100%;
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.profile-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #60a5fa, #2563eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profile:hover {
+  transform: scale(1.1);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 2px solid white;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- CONTENT ---------- */
+.content {
+  display: flex;
+  align-items: flex-start;
+  gap: 80px;
+  margin-top: 10px;
+}
+
+.text h1 {
+  font-size: 52px;
+  line-height: 1.15;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #1e40af;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #64748b;
+  margin-bottom: 26px;
+}
+
+.btn-connect {
+  background: linear-gradient(135deg, #60a5fa, #2563eb);
+  color: white;
+  border: none;
+  padding: 14px 40px;
+  font-size: 15px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- PIE CHART ---------- */
+.chart-wrapper {
+  position: relative;
+  margin-top: -40px;
+}
+
+.chart {
+  width: 230px;
+  height: 230px;
+  border-radius: 50%;
+  /* Default placeholder gradient */
+  background: conic-gradient(#bfdbfe 0% 100%);
+  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.2);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-center {
+  width: 120px;
+  height: 120px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.chart-total { font-size: 28px; font-weight: 700; color: #1e40af; }
+.chart-total-label { font-size: 11px; color: #64748b; text-transform: uppercase; }
+
+.label {
+  position: absolute;
+  font-size: 12px;
+  background: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  font-weight: 500;
+}
+
+.label-color { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+.l1 { right: -90px; top: 40%; }
+.l2 { left: -85px; top: 55%; }
+.l3 { top: -20px; left: 30%; }
+
+/* ---------- DONATION SECTION ---------- */
+.donation-section {
+  background: white;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.08);
+  margin-top: 35px;
+  max-width: 800px;
+}
+
+.donation-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.donation-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #60a5fa, #2563eb);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+}
+
+.donation-title {
+  flex: 1;
+}
+
+.donation-title h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1e40af;
+  margin-bottom: 4px;
+}
+
+.donation-title p {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.progress-container {
+  margin-bottom: 16px;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 24px;
+  background: #e8f3ff;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
+  border-radius: 12px;
+  transition: width 0.8s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.donation-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.donation-amount {
+  display: flex;
+  gap: 24px;
+}
+
+.amount-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.amount-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.amount-label {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.btn-donate {
+  background: linear-gradient(135deg, #60a5fa, #2563eb);
+  color: white;
+  border: none;
+  padding: 10px 28px;
+  font-size: 14px;
+  border-radius: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.btn-donate:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+}
+
+/* ---------- STATS CARDS ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.stat-card {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.08);
+  transition: 0.3s;
+}
+
+.stat-card:hover { transform: translateY(-4px); }
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.blue { background: #dbeafe; color: #2563eb; }
+.green { background: #dcfce7; color: #16a34a; }
+.purple { background: #f3e8ff; color: #9333ea; }
+
+.stat-value { font-size: 32px; font-weight: 700; color: #0f172a; }
+.stat-label { font-size: 13px; color: #64748b; }
+
+.footer {
+  margin-top: auto;
+  padding: 18px 0;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #475569;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <aside class="sidebar">
+    <a href="#" class="nav-item active"><i class="fa-solid fa-chart-column"></i><div class="tooltip">Home</div></a>
+    <a href="messages.html" class="nav-item"><i class="fa-regular fa-comment"></i><div class="tooltip">Messages</div></a>
+    <a href="eventsal.html" class="nav-item"><i class="fa-regular fa-calendar"></i><div class="tooltip">Events</div></a>
+    <a href="aljobs.html" class="nav-item"><i class="fa-solid fa-briefcase"></i><div class="tooltip">Jobs</div></a>
+    <a href="alumnial.html" class="nav-item"><i class="fa-solid fa-users"></i><div class="tooltip">Network</div></a>
+    <a href="galleryal.html" class="nav-item"><i class="fa-solid fa-images"></i><div class="tooltip">Gallery</div></a>
+    <a href="welcome.html" id="logoutBtn" class="nav-item" style="margin-top: auto;"><i class="fa-solid fa-arrow-right-from-bracket"></i><div class="tooltip">Logout</div></a>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="search">
+        <i class="fa-solid fa-search" style="color: #94a3b8;"></i>
+        <input placeholder="Search network...">
+      </div>
+      <div class="profile-wrapper">
+        <a href="notification.html">
+          <div class="topbar-icon" title="Notifications">
+            <i class="fa-regular fa-bell"></i>
+          </div>
+        </a>
+        <a href="calender.html">
+          <div class="topbar-icon" title="Calendar">
+            <i class="fa-regular fa-calendar"></i>
+          </div>
+        </a>
+        <div class="profile" id="userInitials" onclick="goToProfile()">
+            JD <div class="notification-badge">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="text">
+        <h1><br>WELCOME<br><br></h1>
+        <p class="subtitle">Reconnect with your network and explore new opportunities</p>
+        <a href="alumnis.html" class="btn-connect">
+          <i class="fa-solid fa-users"></i> Connect with Alumni
+        </a>
+      </div>
+
+      <div class="chart-wrapper">
+        <div class="chart" id="pieChart">
+          <div class="chart-center">
+            <div class="chart-total" id="totalCount">0</div>
+            <div class="chart-total-label">Total</div>
+          </div>
+        </div>
+        <div class="label l1" id="labelAlumni"><span class="label-color" style="background:#2563eb"></span>Alumni <span class="percent" style="display:block; color:#2563eb">0%</span></div>
+        <div class="label l2" id="labelStudents"><span class="label-color" style="background:#60a5fa"></span>Students <span class="percent" style="display:block; color:#2563eb">0%</span></div>
+        <div class="label l3" id="labelOthers"><span class="label-color" style="background:#bfdbfe"></span>Others <span class="percent" style="display:block; color:#2563eb">0%</span></div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fa-solid fa-user-group"></i></div>
+        <div class="stat-value" id="connectionsCount">0</div>
+        <div class="stat-label">Total Connections</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fa-solid fa-calendar-check"></i></div>
+        <div class="stat-value" id="totalEvents">0</div>
+        <div class="stat-label">Upcoming Events</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon purple"><i class="fa-solid fa-briefcase"></i></div>
+        <div class="stat-value" id="totalJobs">0</div>
+        <div class="stat-label">Job Opportunities</div>
+      </div>
+    </div>
+
+    <!-- DONATION SECTION -->
+    <div class="donation-section">
+      <div class="donation-header">
+        <div class="donation-icon">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="donation-title">
+          <h3>Scholarship Fund 2026</h3>
+          <p>Help us empower the next generation of students</p>
+        </div>
+      </div>
+      
+      <div class="progress-container">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBar" style="width: 0%">
+            <span id="progressPercent">0%</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="donation-stats">
+        <div class="donation-amount">
+          <div class="amount-item">
+            <div class="amount-value" id="raisedAmount">₹0</div>
+            <div class="amount-label">Raised</div>
+          </div>
+          <div class="amount-item">
+            <div class="amount-value" id="goalAmount">₹500,000</div>
+            <div class="amount-label">Goal</div>
+          </div>
+          <div class="amount-item">
+            <div class="amount-value" id="donorsCount">0</div>
+            <div class="amount-label">Donors</div>
+          </div>
+        </div>
+        <button class="btn-donate" onclick="handleDonate()">
+          <i class="fa-solid fa-heart"></i> Donate Now
+        </button>
+      </div>
+    </div>
+
+    
+    <div class="footer">
+      <div>© 2026 College Alumni Association</div>
+      <div>Built with 💙</div>
+    </div>
+  </main>
+</div>
+
+<script>
+    const API_URL = "http://127.0.0.1:5000/dashboard-stats";
+
+    window.addEventListener('load', () => {
+        const nameDisplay = document.getElementById('displayUsername');
+        const nameDisplay2 = document.getElementById('displayUsername2');
+        const profileCircle = document.getElementById('userInitials');
+        const userData = localStorage.getItem('userSession');
+        
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                if (user && user.username) {
+                    const name = user.username.toUpperCase();
+                    
+                    // 1. Update Welcome Text (both instances)
+                    if(nameDisplay) nameDisplay.innerText = name;
+                    if(nameDisplay2) nameDisplay2.innerText = name;
+                    
+                    // 2. Update Profile Initials
+                    if(profileCircle) {
+                        profileCircle.innerHTML = `${name.charAt(0)} <div class="notification-badge">0</div>`;
+                    }
+                }
+            } catch (e) {
+                console.error("Error parsing user data", e);
+            }
+        }
+        fetchDatabaseStats();
+        updateDonationProgress();
+    });
+
+    async function fetchDatabaseStats() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            
+            // Update Stats Cards (both sets)
+            document.getElementById('connectionsCount').innerText = data.connections || 0;
+            document.getElementById('totalEvents').innerText = data.events_count || 0;
+            document.getElementById('totalJobs').innerText = data.jobs_count || 0;
+            document.getElementById('totalCount').innerText = data.connections || 0;
+            
+            document.getElementById('connectionsCount2').innerText = data.connections || 0;
+            document.getElementById('totalEvents2').innerText = data.events_count || 0;
+            document.getElementById('totalJobs2').innerText = data.jobs_count || 0;
+            document.getElementById('totalCount2').innerText = data.connections || 0;
+
+            // Updated Pie Chart Logic for Alumni vs Students (both charts)
+            if (data.connections > 0 && data.roles) {
+                const total = data.connections;
+                const alumni = data.roles.alumni || 0;
+                const students = data.roles.students || 0;
+                const others = data.roles.others || 0;
+
+                // Calculate Percentages
+                const pAlumni = (alumni / total) * 100;
+                const pStudents = (students / total) * 100;
+                const pOthers = (others / total) * 100;
+
+                const gradientStyle = `conic-gradient(
+                    #2563eb 0% ${pAlumni}%, 
+                    #60a5fa ${pAlumni}% ${pAlumni + pStudents}%, 
+                    #bfdbfe ${pAlumni + pStudents}% 100%
+                )`;
+
+                // Update the CSS conic-gradient dynamically (first chart)
+                const chart = document.getElementById('pieChart');
+                chart.style.background = gradientStyle;
+
+                // Update the CSS conic-gradient dynamically (second chart)
+                const chart2 = document.getElementById('pieChart2');
+                chart2.style.background = gradientStyle;
+
+                // Update text percentages in the labels (first set)
+                document.querySelector('#labelAlumni .percent').innerText = `${pAlumni.toFixed(1)}%`;
+                document.querySelector('#labelStudents .percent').innerText = `${pStudents.toFixed(1)}%`;
+                document.querySelector('#labelOthers .percent').innerText = `${pOthers.toFixed(1)}%`;
+
+                // Update text percentages in the labels (second set)
+                document.querySelector('#labelAlumni2 .percent').innerText = `${pAlumni.toFixed(1)}%`;
+                document.querySelector('#labelStudents2 .percent').innerText = `${pStudents.toFixed(1)}%`;
+                document.querySelector('#labelOthers2 .percent').innerText = `${pOthers.toFixed(1)}%`;
+            } else {
+                // If no data, show a neutral gray circle (both charts)
+                document.getElementById('pieChart').style.background = '#e2e8f0';
+                document.getElementById('pieChart2').style.background = '#e2e8f0';
+            }
+        } catch (error) {
+            console.error("Could not fetch stats from backend", error);
+        }
+    }
+
+    // Donation Progress Function
+    function updateDonationProgress() {
+        // You can fetch this data from your backend API
+        // For now, using example values
+        const raised = 275000; // Amount raised so far
+        const goal = 500000;   // Target goal
+        const donors = 142;    // Number of donors
+        
+        const percentage = (raised / goal) * 100;
+        
+        // Update first donation section
+        document.getElementById('raisedAmount').innerText = `₹${raised.toLocaleString('en-IN')}`;
+        document.getElementById('goalAmount').innerText = `₹${goal.toLocaleString('en-IN')}`;
+        document.getElementById('donorsCount').innerText = donors;
+        document.getElementById('progressBar').style.width = `${percentage}%`;
+        document.getElementById('progressPercent').innerText = `${percentage.toFixed(1)}%`;
+        
+        // Update second donation section
+        document.getElementById('raisedAmount2').innerText = `₹${raised.toLocaleString('en-IN')}`;
+        document.getElementById('goalAmount2').innerText = `₹${goal.toLocaleString('en-IN')}`;
+        document.getElementById('donorsCount2').innerText = donors;
+        document.getElementById('progressBar2').style.width = `${percentage}%`;
+        document.getElementById('progressPercent2').innerText = `${percentage.toFixed(1)}%`;
+    }
+
+    // Donate Button Handler
+    function handleDonate() {
+        // Redirect to donation page or open donation modal
+        alert('Donation feature coming soon!');
+        // window.location.href = 'donate.html';
+    }
+
+    // Logout Logic
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('userSession');
+        window.location.href = 'login.html';
+    });
+
+    // Profile Redirect Function
+    function goToProfile() {
+        window.location.href = "S_profile.html";
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Details | Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        body { background: linear-gradient(135deg, #f7fbff 0%, #e8f3ff 100%); color: #0f172a; }
+
+        .container { display: grid; grid-template-columns: 90px 1fr; min-height: 100vh; }
+
+        /* ---------- SIDEBAR ---------- */
+        .sidebar {
+            background: linear-gradient(180deg, #e8f3ff 0%, #dbeafe 100%);
+            padding: 28px 0; display: flex; flex-direction: column; align-items: center; gap: 22px;
+            box-shadow: 4px 0 20px rgba(37, 99, 235, 0.08); position: sticky; top: 0; height: 100vh; z-index: 1000;
+        }
+        .nav-item {
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; color: #2563eb; transition: 0.3s; text-decoration: none;
+        }
+        .nav-item:hover { background: rgba(37, 99, 235, 0.1); color: #1e40af; }
+
+        /* ---------- MAIN CONTENT ---------- */
+        .main { padding: 40px 50px; display: flex; flex-direction: column; align-items: center; }
+        .form-wrapper { width: 100%; max-width: 800px; }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px; color: #64748b;
+            text-decoration: none; font-weight: 500; margin-bottom: 20px; transition: 0.2s;
+        }
+        .back-link:hover { color: #2563eb; }
+
+        .header-section { margin-bottom: 30px; }
+        .header-section h1 {
+            font-size: 32px; background: linear-gradient(135deg, #1e40af, #2563eb);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .form-card {
+            background: white; border-radius: 24px; padding: 40px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.05); border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .full-width { grid-column: span 2; }
+
+        .form-group { margin-bottom: 5px; }
+        label { display: block; font-weight: 600; color: #1e40af; margin-bottom: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Read-only style */
+        .data-display {
+            width: 100%; padding: 12px 16px; border-radius: 12px;
+            font-size: 16px; background: #f8fafc; color: #334155;
+            border: 1px solid #e2e8f0; min-height: 48px; display: flex; align-items: center;
+        }
+
+        .description-box { min-height: 120px; align-items: flex-start; line-height: 1.6; padding-top: 15px; }
+
+        .badge-mode {
+            display: inline-block; padding: 4px 12px; border-radius: 20px; 
+            background: #dbeafe; color: #1e40af; font-weight: 600; font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+            .main { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <aside class="sidebar">
+        <a href="index.html" class="nav-item"><i class="fa-solid fa-chart-column"></i></a>
+        <a href="events.html" class="nav-item"><i class="fa-regular fa-calendar"></i></a>
+        <a href="jobs.html" class="nav-item"><i class="fa-solid fa-briefcase"></i></a>
+    </aside>
+
+    <main class="main">
+        <div class="form-wrapper">
+            <a href="events.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Events</a>
+            
+            <div class="header-section">
+                <h1 id="viewTitle">Loading Event...</h1>
+                <p style="color: #64748b;">Community Event Details and Information.</p>
+            </div>
+
+            <div class="form-card">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Event Title</label>
+                        <div class="data-display" id="displayTitle">---</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Event Mode</label>
+                        <div><span class="badge-mode" id="displayMode">---</span></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Capacity</label>
+                        <div class="data-display" id="displayCapacity">---</div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Location / Meeting Link</label>
+                        <div class="data-display" id="displayLocation">---</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date</label>
+                        <div class="data-display" id="displayDate">---</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Time Slot</label>
+                        <div class="data-display" id="displayTime">---</div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Event Description</label>
+                        <div class="data-display description-box" id="displayDescription">---</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    async function fetchEventDetails() {
+        // 1. Get Event ID from URL (e.g., event-details.html?id=12)
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id');
+
+        if (!eventId) {
+            document.getElementById('viewTitle').innerText = "Event Not Found";
+            return;
+        }
+
+        try {
+            // 2. Fetch from your Flask API
+            const response = await fetch(`http://127.0.0.1:5000/get-event/${eventId}`);
+            
+            if (!response.ok) throw new Error("Event not found");
+
+            const event = await response.json();
+
+            // 3. Populate the UI
+            document.getElementById('viewTitle').innerText = event.title;
+            document.getElementById('displayTitle').innerText = event.title;
+            document.getElementById('displayMode').innerText = event.mode;
+            document.getElementById('displayCapacity').innerText = `${event.capacity} People`;
+            document.getElementById('displayLocation').innerText = event.location;
+            document.getElementById('displayDate').innerText = event.date;
+            document.getElementById('displayTime').innerText = `${event.start_time} - ${event.end_time}`;
+            document.getElementById('displayDescription').innerText = event.description || "No description provided.";
+
+        } catch (error) {
+            console.error(error);
+            alert("Error loading event data. Is the backend running?");
+        }
+    }
+
+    // Initialize on load
+    window.onload = fetchEventDetails;
+</script>
+
+</body>
+</html>
